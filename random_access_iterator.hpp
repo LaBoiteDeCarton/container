@@ -1,14 +1,12 @@
 #ifndef RANDOM_ACCESS_ITERATOR_HPP
 # define RANDOM_ACCESS_ITERATOR_HPP
 
-#include <iterator>
-
-struct random_access_iterator_tag {};
+#include "ft_iterator.hpp"
 
 namespace ft
 {
 	template<class T>
-	class random_access_iterator: public std::iterator<random_access_iterator_tag, T>
+	class random_access_iterator: public iterator<random_access_iterator_tag, T>
 	{
 		//typedef std::iterator<random_access_iterator_tag, T>::iterator_category iterator_category;
 		//typedef std::iterator<random_access_iterator_tag, T>::pointer	pointer;
@@ -38,6 +36,7 @@ namespace ft
 
 		private:
 			pointer	_ptr;
+			Category haha;
 	};	
 }
 
