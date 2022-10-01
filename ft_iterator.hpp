@@ -1,3 +1,6 @@
+#ifndef FT_ITERATOR_HPP
+# define FT_ITERATOR_HPP
+
 #include <cstddef>
 
 namespace ft
@@ -10,6 +13,23 @@ namespace ft
     	typedef Pointer   pointer;
     	typedef Reference reference;
     	typedef Category  iterator_category;
+	};
+
+	template <class Iterator>
+	class reverse_iterator
+	{
+		typedef Iterator												iterator_type;
+		typedef typename iterator_traits<Iterator>::iterator_category	iterator_category;
+		typedef typename iterator_traits<Iterator>::value_type			value_type;
+		typedef typename iterator_traits<Iterator>::difference_type		difference_type;
+		typedef typename iterator_traits<Iterator>::pointer				pointer;
+		typedef typename iterator_traits<Iterator>::reference			reference;
+		//ici definir les manipulations sur le reverse_iterator ++ -- etc
+
+		reverse_iterator();
+		explicit reverse_iterator (iterator_type it);
+		template <class Iter>
+		reverse_iterator (const reverse_iterator<Iter>& rev_it);
 	};
 
 	/* Defining iterator_traits */
@@ -50,3 +70,5 @@ namespace ft
 	struct bidirectional_iterator_tag : public forward_iterator_tag       {};
 	struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 }
+
+#endif

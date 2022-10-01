@@ -8,10 +8,7 @@ namespace ft
 	template<class T>
 	class random_access_iterator: public iterator<random_access_iterator_tag, T>
 	{
-		//typedef std::iterator<random_access_iterator_tag, T>::iterator_category iterator_category;
-		//typedef std::iterator<random_access_iterator_tag, T>::pointer	pointer;
-		//typedef T*	pointer;
-
+		/* random_access_iterator constructeur */
 		random_access_iterator(void) : _ptr(NULL) {}
 		random_access_iterator(pointer ptr) : _ptr(ptr) {}
 		random_access_iterator(const random_access_iterator& src): _ptr(src._ptr) {}
@@ -32,11 +29,10 @@ namespace ft
 		{	return (*(this->_ptr));	}
 
 		value_type				operator->(void)
-		{	return (*this)	}
+		{	return (*this);	}
 
 		private:
 			pointer	_ptr;
-			Category haha;
 	};	
 }
 
