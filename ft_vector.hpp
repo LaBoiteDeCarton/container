@@ -66,8 +66,8 @@ namespace ft
 			const_reference front() const;
 			reference back();
 			const_reference back() const;
-			value_type* data() noexcept;
-			const value_type* data() const noexcept;
+			value_type* data();
+			const value_type* data() const;
 
 			/* Modifier */
 			template <class InputIterator>
@@ -96,7 +96,7 @@ namespace ft
 			void		__destroy_from(pointer p);
 			void		__push_n_back(size_type n, const value_type& val);
 			void		__realloc_copy_and_delete(size_type n); ////to do
-			size_type	__new_size_cap(site_type el_to_add); //// to do
+			size_type	__new_cap(size_type el_to_add); //// to do
 			size_type	__space_remains();
 			pointer		__memmove(pointer from_start, pointer from_end, pointer to_start);
 
@@ -123,11 +123,39 @@ namespace ft
 		pointer	new_last;
 
 		if (n > __space_remains())
-			__realloc_copy_and_delete(__new_size_cap(n));
+			__realloc_copy_and_delete(__new_cap(n));
 		new_last = this->_last;
 		for (; n; n--)
 			this->_alloc.construct(new_last++, val);
 		this->_last = new_last;
+	}
+
+	template<class T, class Alloc>
+	void	vector<T,Alloc>::__realloc_copy_and_delete(size_type n)
+	{
+		pointer	save_first = this->_first;
+		pointer save_last = this->_last;
+		pointer save_end_cap = this->_end_cap;
+
+		this->_first = this->_alloc.allocate(n);
+		this->_last = this->_first;
+		this->_end_cap = this->_first + n;
+		this->assign(save_first, save_last);
+		
+		//il faut destroy aussi les elements ici
+		this->_alloc.deallocate(save_first, save_end_cap - save_first);
+	}
+
+	template<class T, class Alloc>
+	typename vector<T,Alloc>::size_type
+	vector<T,Alloc>::__new_cap(size_type el_to_add)
+	{
+		size_type	new_cap = capacity();
+		size_type	current_size = size();
+
+		while (new_cap < el_to_add + current_size)
+			new_cap = new_cap * 2 + 1;
+		return (new_cap);
 	}
 
 	template<class T, class Alloc>
@@ -187,7 +215,7 @@ namespace ft
 	{
 		this->_first = _alloc.allocate(n);
 		this->_last = this->_first;
-		this->_end_cap = this->_last + n;
+		this->_end_cap = this->_first + n;
 		this->__push_n_back(n, val);
 	}
 
@@ -497,13 +525,19 @@ namespace ft
 	typename vector<T,Alloc>::iterator
 	vector<T,Alloc>::insert (iterator position, const value_type& val)
 	{
-
+		// reserve(size() + 1);
+		// this->_last = __memmove(position, this->_last, position + 1);
+		// _alloc.construct(position, val);
+		insert(position, 1, val);
 	}	
 	
 	template<class T, class Alloc>
 	void vector<T,Alloc>::insert (iterator position, size_type n, const value_type& val)
 	{
-
+		reserve(size() + n);
+		this->_last = __memmove(position, this->_last, position + n);
+		for (; n; n--)
+			_alloc.construct(position++, val);
 	}
 	
 	template<class T, class Alloc>

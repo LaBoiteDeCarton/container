@@ -11,21 +11,62 @@
 
 namespace ft
 {
+	/* --------------------------------------------------------------------------
+
+		ITERATOR FOR IDIRECTIONAL ORDERED TREE
+		
+	-------------------------------------------------------------------------- */
+
+
 	template<class T>
 	class __tree_bidirectional_iter: public iterator<bidirectional_iterator_tag, T>
 	{
+	public:
+		__tree_bidirectional_iter();
+		__tree_bidirectional_iter(const __tree_bidirectional_iter& x);
+
+		__tree_bidirectional_iter& operator=(const __tree_bidirectional_iter& x);
 		
+		T& operator*();
+		T& operator->();
+		__tree_bidirectional_iter& operator++();
+		__tree_bidirectional_iter& operator++(int);
+		__tree_bidirectional_iter& operator--();
+		__tree_bidirectional_iter& operator--(int);
+
 	};
 
-	template < class Key, class T, class Comp, class Alloc>
+	template<class T>
+	bool operator== (const __tree_bidirectional_iter<T>& lhs, const __tree_bidirectional_iter<T>& rhs)
+	{
+		
+	}
+
+	template<class T>
+	bool operator!= (const __tree_bidirectional_iter<T>& lhs, const __tree_bidirectional_iter<T>& rhs)
+	{
+		
+	}	
+
+	/* --------------------------------------------------------------------------
+
+		BIDIRECTIONAL ORDERED TREE (+ NODE)
+		
+	-------------------------------------------------------------------------- */
+
+	template<class T>
 	class	_node_bst
 	{
-	public:
-		typedef Alloc										allocator_type;
-		typedef typename allocator_type::pointer			pointer;
+		_node_bst();
+		_node_bst(const T& val);
 
-		pointer		node;
-		//_node_bst	*father; ??
+		_node_bst& operator=(const _node_bst& x);
+
+		// _node_bst_add_left();
+		// _node_bst_add_right();
+	public:
+		const T		node;
+		_node_bst	*father; //needed for iterator++ -- etc
 		_node_bst	*left;
 		_node_bst	*right;
 	private:
@@ -48,9 +89,9 @@ namespace ft
 			__bst(__bst& x);
 			__bst& operator=(__bst& x);
 
-			typedef _node_bst	Node;
+			typedef _node_bst<T>	Node;
 
-			Node	_root;
+			Node	*_root;
 	};
 
 	template < class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<pair<const Key,T> > >
