@@ -25,7 +25,7 @@ namespace ft
 			typedef const_pointer											const_iterator;
 			typedef typename ft::reverse_iterator<iterator>					reverse_iterator;
 			typedef typename ft::reverse_iterator<const_iterator>			const_reverse_iterator;
-			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
+			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type; //c'est du c++11 ça non?
 			typedef size_t													size_type;
 
 			/* Constructors */
@@ -282,7 +282,7 @@ namespace ft
 		//return (iterator(this->_first));
 
 		//using poitner as iterator
-		return (this->_first)
+		return (this->_first);
 	}
 
 	template<class T, class Alloc>
@@ -293,7 +293,7 @@ namespace ft
 		//return (iterator(this->_last));
 
 		//using poitner as iterator
-		return (this->_last)
+		return (this->_last);
 	}
 
 	template<class T, class Alloc>
@@ -304,7 +304,7 @@ namespace ft
 		//return (iterator(this->_last));
 
 		//using poitner as iterator
-		return (this->_last)
+		return (this->_last);
 	}
 
 	template<class T, class Alloc>
@@ -345,14 +345,14 @@ namespace ft
 	typename vector<T,Alloc>::size_type
 	vector<T,Alloc>::size() const
 	{
-		return (static_cast<size_type>(this->_last - this->_first))
+		return (static_cast<size_type>(this->_last - this->_first));
 	}
 
 	template<class T, class Alloc>
 	typename vector<T,Alloc>::size_type
 	vector<T,Alloc>::max_size() const
 	{
-		return (this->_alloc.max_size())
+		return (this->_alloc.max_size());
 	}
 
 	template<class T, class Alloc>
@@ -371,7 +371,7 @@ namespace ft
 	typename vector<T,Alloc>::size_type
 	vector<T,Alloc>::capacity() const
 	{
-		return (static_cast<size_type>(this->_end_cap - this->_first))
+		return (static_cast<size_type>(this->_end_cap - this->_first));
 	}
 
 	template<class T, class Alloc>

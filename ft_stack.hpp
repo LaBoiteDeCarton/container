@@ -15,7 +15,7 @@ namespace ft
 
 			/* Constructors */
 			explicit stack (const container_type& ctnr = container_type());
-			//~stack()  implicite desruction of C;
+			//~stack()  no need, implicite desruction of C;
 
 			/* Member functions */
 			bool empty() const;
