@@ -5,9 +5,9 @@
 #include <functional> // std::less  and std::binary_function
 #include "ft_utility.hpp" // ft::pair
 
-#include "ft_iterator.hpp" // ft::iterator ft::iterator_traits ft::bidirectional_iterator_tag
+#include "iterator.hpp" // ft::iterator ft::iterator_traits ft::bidirectional_iterator_tag
 
-#include <map>
+//#include <map>
 
 namespace ft
 {
@@ -34,7 +34,15 @@ namespace ft
 		__tree_bidirectional_iter& operator--();
 		__tree_bidirectional_iter& operator--(int);
 
+	private:
+		//NodeType	*node;
 	};
+
+	template<class T>
+	T& __tree_bidirectional_iter<T>::operator*()
+	{
+
+	}
 
 	template<class T>
 	bool operator== (const __tree_bidirectional_iter<T>& lhs, const __tree_bidirectional_iter<T>& rhs)
@@ -47,6 +55,7 @@ namespace ft
 	{
 		
 	}	
+
 
 	/* --------------------------------------------------------------------------
 
@@ -79,19 +88,22 @@ namespace ft
 			typedef T			value_type;
 			typedef Comp		key_compare;
 			typedef Alloc		allocator_type;
+			typedef size_t		size_type;
 
 			__bst();
 			~__bst();
 			
+			size_type	size() { return (this->_size); }; 
 
 		private:
+			typedef _node_bst<T>	Node;
+
 			__bst(value_type& val);
 			__bst(__bst& x);
 			__bst& operator=(__bst& x);
 
-			typedef _node_bst<T>	Node;
-
-			Node	*_root;
+			Node		*_root;
+			size_type	_size;
 	};
 
 	template < class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<pair<const Key,T> > >
@@ -187,7 +199,7 @@ namespace ft
 		private:
 			typedef __bst<value_type, key_compare, allocator_type>	KeyValBST;
 			
-			KeyValBST	_tree;
+			KeyValBST		_tree;
 
 	};
 
@@ -305,21 +317,21 @@ namespace ft
 	template < class Key, class T, class Comp, class Alloc>
 	bool map<Key,T,Comp,Alloc>::empty() const
 	{
-
+		return (size() == 0);
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::size_type
 	map<Key,T,Comp,Alloc>::size() const
 	{
-
+		return (this->_tree.size());
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::size_type
 	map<Key,T,Comp,Alloc>::max_size() const
 	{
-
+		allocator_type().maxsize();
 	}
 	
 	/* --------------------------------------------------------------------------

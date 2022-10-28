@@ -1,7 +1,7 @@
 #ifndef FT_TYPE_TRAITS_HPP
 # define FT_TYPE_TRAITS_HPP
 
-#include <type_traits>
+#include <type_traits> //std::integral_constant
 
 namespace ft
 {
@@ -27,7 +27,7 @@ namespace ft
 
 	template <bool Cond, class T = void> struct enable_if;
 	template <class T>
-	struct enable_if<true, T> { typedef T type };
+	struct enable_if<true, T> { typedef T type; };
 
 	//exemple de enable_if
 	//imaginons qu'on veut une fonction generic qui calcul le modulo 3 d'un arg de type T mais seulement si c'est un integral type
