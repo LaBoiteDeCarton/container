@@ -2,6 +2,7 @@
 # define FT_STACK_HPP
 
 #include "vector.hpp"
+#include <stack>
 
 namespace ft
 {
@@ -11,7 +12,7 @@ namespace ft
 		public:
 			typedef T										value_type;
 			typedef Container								container_type;
-			typedef typename container_type<T>::size_type	size_type;
+			typedef typename container_type::size_type		size_type;
 
 			/* Constructors */
 			explicit stack (const container_type& ctnr = container_type());
@@ -27,6 +28,15 @@ namespace ft
 
 		private:
 			container_type	_C;
+		public:
+		/*
+			Comparaison operator, using friend to acces the private container outside the class
+			Operator == and operator < are sufficent to check all possible comparaison
+		*/
+		template <class _T, class _Container>
+		friend bool operator== (const stack<_T,_Container>& lhs, const stack<_T,_Container>& rhs);
+		template <class _T, class _Container>
+		friend bool operator<  (const stack<_T,_Container>& lhs, const stack<_T,_Container>& rhs);
 
 	};
 
@@ -37,7 +47,7 @@ namespace ft
 	-------------------------------------------------------------------------- */
 
 	template<class T, class Container>
-	stack<T,Container>::stack (const container_type& ctnr = container_type())
+	stack<T,Container>::stack (const container_type& ctnr)
 	:	_C(ctnr)
 	{ }
 
@@ -103,7 +113,7 @@ namespace ft
 	template <class T, class Container>
 	bool operator!= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
 	{
-		return (lhs._C != rhs._C);
+		return (!(lhs == rhs));
 	}	
 	
 	template <class T, class Container>
@@ -115,19 +125,19 @@ namespace ft
 	template <class T, class Container>
 	bool operator<= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
 	{
-		return (lhs._C <= rhs._C);
+		return (!(rhs < lhs));
 	}	
 	
 	template <class T, class Container>
 	bool operator>  (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
 	{
-		return (lhs._C > rhs._C);
+		return (rhs < lhs);
 	}	
 	
 	template <class T, class Container>
 	bool operator>= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
 	{
-		return (lhs._C >= rhs._C);
+		return (!(lhs < rhs));
 	}
 
 }

@@ -107,7 +107,8 @@ namespace ft
 		iterator insert (iterator position, const value_type& val);	
     	void insert (iterator position, size_type n, const value_type& val);
 		template <class InputIterator>
-		void insert (iterator position, InputIterator first, InputIterator last);
+		typename enable_if<!is_integral<InputIterator>::value, void>::type
+		insert (iterator position, InputIterator first, InputIterator last);
 		iterator erase (iterator position);
 		iterator erase (iterator first, iterator last);
 		void swap (vector& x);
@@ -233,11 +234,10 @@ namespace ft
 		{
 			to_start += from_end - from_start;
 			new_last = to_start;
-			for (; from_start != from_end; from_end++)
+			for (; from_start != from_end--;)
 			{
-				_alloc.construct(to_start, *from_end);
+				_alloc.construct(--to_start, *from_end);
 				_alloc.destroy(from_end);
-				to_start--;
 			}
 		}
 		return (new_last);
@@ -469,7 +469,7 @@ namespace ft
 	void vector<T,Alloc>::reserve (size_type n)
 	{
 		if (n > capacity())
-			__realloc_copy_and_delete(n - size());
+			__realloc_copy_and_delete(n);
 	}
 
 	/* --------------------------------------------------------------------------
@@ -622,16 +622,27 @@ namespace ft
 		// reserve(size() + 1);
 		// this->_last = __memmove(position, this->_last, position + 1);
 		// _alloc.construct(position, val);
+		vector<T,Alloc>::difference_type diff(position - this->_first);
 		insert(position, 1, val);
+		position = this->_first + diff;
+		return (position);
 	}	
 	
 	template<class T, class Alloc>
 	void vector<T,Alloc>::insert (iterator position, size_type n, const value_type& val)
 	{
-		reserve(size() + n); //ATTENTION position invalidé apres cette operation si realloc
-		this->_last = __memmove(position, this->_last, position + n);
-		for (; n; n--)
-			_alloc.construct(position++, val);
+		if (position == this->_last)
+			__push_n_back(n, val);
+		else
+		{
+			vector<T,Alloc>::difference_type diff(position - this->_first);
+			reserve(__new_cap(n)); //ATTENTION position invalidé apres cette operation si realloc
+			position = this->_first + diff;
+			this->_last = __memmove(position, this->_last, position + n);
+			for (; n; n--)
+				_alloc.construct(position++, val);
+
+		}
 	}
 	
 	template<class T, class Alloc>
@@ -640,16 +651,29 @@ namespace ft
 	{
 		//calcul de la distance impossible, on insert element par element
 		for (; first != last; position++)
-			insert(position, *first);
+			position = insert(position, *first);
 	}
 
 	template<class T, class Alloc>
 	template <class ForwardIterator>
 	void vector<T,Alloc>::__insert(iterator position, ForwardIterator first, ForwardIterator last, forward_iterator_tag)
 	{
-		(void)position;
-		(void)first;
-		(void)last;
+		typename iterator_traits<ForwardIterator>::difference_type el_to_add = ft::distance(first, last);
+		vector<T,Alloc>::difference_type diff(position - this->_first);
+		reserve(__new_cap(el_to_add)); //calcul de la distance nous permet de faire une realloc une seule fois si necessaire car on sait exactement le nombre d'element a ajouter
+		position = this->_first + diff; //car invalidé si realloc
+		if (position == this->_last)
+		{
+			for (; first != last; first++)
+				_alloc.construct(position++, *first);
+			this->_last = position;
+		}
+		else
+		{
+			this->_last = __memmove(position, this->_last, position + el_to_add);
+			for (; first != last; first++)
+				_alloc.construct(position++, *first);
+		}
 	}
 
 	template<class T, class Alloc>
@@ -658,21 +682,35 @@ namespace ft
 	{
 		//calcul de la distance impossible, on insert element par element
 		for (; first != last; position++)
-			insert(position, *first);
+			position = insert(position, *first);
 	}
 
 	template<class T, class Alloc>
 	template <class ForwardIterator>
 	void vector<T,Alloc>::__insert(iterator position, ForwardIterator first, ForwardIterator last, std::forward_iterator_tag)
 	{
-		(void)position;
-		(void)first;
-		(void)last;
+		typename iterator_traits<ForwardIterator>::difference_type el_to_add = std::distance(first, last);
+		vector<T,Alloc>::difference_type diff(position - this->_first);
+		reserve(__new_cap(el_to_add)); //calcul de la distance nous permet de faire une realloc une seule fois si necessaire car on sait exactement le nombre d'element a ajouter
+		position = this->_first + diff; //car invalidé si realloc
+		if (position == this->_last)
+		{
+			for (; first != last; first++)
+				_alloc.construct(position++, *first);
+			this->_last = position;
+		}
+		else
+		{
+			this->_last = __memmove(position, this->_last, position + el_to_add);
+			for (; first != last; first++)
+				_alloc.construct(position++, *first);
+		}
 	}
 
 	template<class T, class Alloc>
 	template <class InputIterator>
-	void vector<T,Alloc>::insert (iterator position, InputIterator first, InputIterator last)
+	typename enable_if<!is_integral<InputIterator>::value, void>::type
+	vector<T,Alloc>::insert (iterator position, InputIterator first, InputIterator last)
 	{
 		__insert(position, first, last, typename iterator_traits<InputIterator>::iterator_category());
 	}
