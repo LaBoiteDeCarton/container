@@ -10,10 +10,10 @@ namespace ft
 		typedef T2	second_type;
 
 		/* Constructors */
-		pair() {};
+		pair();
 		template<class U, class V>
-		pair (const pair<U,V>& pr) : first(pr.first), second(pr.second) {};
-		pair (const first_type& a, const second_type& b): first(a), second(b) {};
+		pair (const pair<U,V>& pr);
+		pair (const first_type& a, const second_type& b);
 
 		pair& operator= (const pair& pr)
 		{
@@ -26,6 +26,25 @@ namespace ft
 		second_type	second;
 	};
 
+	template <class T1, class T2>
+	pair<T1,T2>::pair()
+		:	first(),
+			second()
+	{ }
+
+	template <class T1, class T2>
+	template<class U, class V>
+	pair<T1,T2>::pair(const pair<U,V>& pr)
+		:	first(pr.first),
+			second(pr.second)
+	{ }
+	
+	template <class T1, class T2>
+	pair<T1,T2>::pair(const first_type& a, const second_type& b)
+		:	first(a),
+			second(b) 
+	{ }
+	
 	/* Relational operators */
 	template <class T1, class T2>
 	bool operator== (const pair<T1,T2> lhs, const pair<T1,T2> rhs)
@@ -65,7 +84,7 @@ namespace ft
 	template< class T1, class T2 >
 	pair<T1, T2> make_pair( T1 fst, T2 snd )
 	{
-		return (pair<T1,T2>(fst, snd))
+		return (pair<T1,T2>(fst, snd));
 	}
 
 	// C++11

@@ -2,7 +2,7 @@ NAME = container
 SRCS = main.cpp 
 OBJS = ${SRCS:.cpp=.o}
 CC = c++
-FLAGS = -Wall -Wextra -Werror -std=c++98
+FLAGS = -Wall -Wextra -std=c++98
 
 .cpp.o:
 	${CC} ${FLAGS} -c $< -o ${<:.cpp=.o}

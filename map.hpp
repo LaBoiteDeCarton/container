@@ -1,143 +1,65 @@
 #ifndef FT_MAP_HPP
 # define FT_MAP_HPP
 
-#include <memory> // std::allocator
-#include <functional> // std::less  and std::binary_function
-#include "ft_utility.hpp" // ft::pair
+/*
+			#Includes					//	used class or functions from inlcudes
+*/
+#include <memory>						//	std::allocator
+#include <functional>					//	std::less && std::binary_function
+#include "utility.hpp"					//	ft::pair
+#include "algorithme.hpp"				//	ft::equal
+#include "iterator.hpp"					//	ft::iterator, ft::iterator_traits, ft::bidirectional_iterator_tag
+#include "__binary_search_tree.hpp"		//	ft::__bst
 
-#include "iterator.hpp" // ft::iterator ft::iterator_traits ft::bidirectional_iterator_tag
 
-//#include <map>
+//to delete this include
+#include <map>
 
 namespace ft
 {
-	/* --------------------------------------------------------------------------
-
-		ITERATOR FOR IDIRECTIONAL ORDERED TREE
-		
-	-------------------------------------------------------------------------- */
-
-
-	template<class T>
-	class __tree_bidirectional_iter: public iterator<bidirectional_iterator_tag, T>
-	{
-	public:
-		__tree_bidirectional_iter();
-		__tree_bidirectional_iter(const __tree_bidirectional_iter& x);
-
-		__tree_bidirectional_iter& operator=(const __tree_bidirectional_iter& x);
-		
-		T& operator*();
-		T& operator->();
-		__tree_bidirectional_iter& operator++();
-		__tree_bidirectional_iter& operator++(int);
-		__tree_bidirectional_iter& operator--();
-		__tree_bidirectional_iter& operator--(int);
-
-	private:
-		//NodeType	*node;
-	};
-
-	template<class T>
-	T& __tree_bidirectional_iter<T>::operator*()
-	{
-
-	}
-
-	template<class T>
-	bool operator== (const __tree_bidirectional_iter<T>& lhs, const __tree_bidirectional_iter<T>& rhs)
-	{
-		
-	}
-
-	template<class T>
-	bool operator!= (const __tree_bidirectional_iter<T>& lhs, const __tree_bidirectional_iter<T>& rhs)
-	{
-		
-	}	
-
-
-	/* --------------------------------------------------------------------------
-
-		BIDIRECTIONAL ORDERED TREE (+ NODE)
-		
-	-------------------------------------------------------------------------- */
-
-	template<class T>
-	class	_node_bst
-	{
-		_node_bst();
-		_node_bst(const T& val);
-
-		_node_bst& operator=(const _node_bst& x);
-
-		// _node_bst_add_left();
-		// _node_bst_add_right();
-	public:
-		const T		node;
-		_node_bst	*father; //needed for iterator++ -- etc
-		_node_bst	*left;
-		_node_bst	*right;
-	private:
-	};
-
-	template<class T, class Comp, class Alloc = std::allocator<T> >
-	class __bst
-	{
-		public:
-			typedef T			value_type;
-			typedef Comp		key_compare;
-			typedef Alloc		allocator_type;
-			typedef size_t		size_type;
-
-			__bst();
-			~__bst();
-			
-			size_type	size() { return (this->_size); }; 
-
-		private:
-			typedef _node_bst<T>	Node;
-
-			__bst(value_type& val);
-			__bst(__bst& x);
-			__bst& operator=(__bst& x);
-
-			Node		*_root;
-			size_type	_size;
-	};
-
 	template < class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<pair<const Key,T> > >
 	class map
 	{
 		public:
-			typedef Key											key_type;
-			typedef T											mapped_type;
-			typedef pair<const Key,T>							value_type;
-			typedef Compare										key_compare;
-			typedef Alloc										allocator_type;
-			typedef typename allocator_type::reference			reference;
-			typedef typename allocator_type::const_reference	const_reference;
-			typedef typename allocator_type::pointer			pointer;
-			typedef typename allocator_type::const_pointer		const_pointer;
-			typedef __tree_bidirectional_iter<value_type>		iterator;
-			typedef __tree_bidirectional_iter<const value_type>	const_iterator;
-			typedef ft::reverse_iterator<iterator>				reverse_iterator;
-			typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
-			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type; //c'est du c++11 ça non?
-			typedef size_t													size_type;
-
-
+			typedef Key														key_type;
+			typedef T														mapped_type;
+			typedef pair<const Key,T>										value_type;
+			typedef Compare													key_compare;
+			typedef Alloc													allocator_type;
+			typedef typename allocator_type::reference						reference;
+			typedef typename allocator_type::const_reference				const_reference;
+			typedef typename allocator_type::pointer						pointer;
+			typedef typename allocator_type::const_pointer					const_pointer;
+			
 			class value_compare : public std::binary_function<value_type, value_type, bool>
 			{
 				friend class map;
 			protected:
-				Compare	comp;
+				key_compare	comp;
 				value_compare(Compare c): comp(c) {};
 			public:
 				bool	operator() (const value_type& lhs, const value_type& rhs) const{
 					return (comp(lhs.first, rhs.first));
 				};
+				bool	operator() (const key_type& k, const value_type& rhs) const{
+					return (comp(k, rhs.first));
+				};
+				bool	operator() (const value_type& lhs, const key_type& k) const{
+					return (comp(lhs.first, k));
+				};
 			};
+
+		private:
+			typedef __bst<value_type, value_compare, allocator_type>		KeyValBST;
+		public:
+			typedef typename KeyValBST::iterator							iterator;
+			typedef typename KeyValBST::const_iterator						const_iterator;
+			typedef ft::reverse_iterator<iterator>							reverse_iterator;
+			typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
+			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type; //c'est du c++11 ça non?
+			typedef size_t													size_type;
+
+
 
 			/* Contructors */
 			explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type());	
@@ -165,42 +87,53 @@ namespace ft
 			size_type max_size() const;
 
 			/* Element access */
-			mapped_type& operator[] (const key_type& k);
-			mapped_type& at (const key_type& k);
-			const mapped_type& at (const key_type& k) const;
+			mapped_type& operator[] (const key_type& k); //
+			mapped_type& at (const key_type& k); //
+			const mapped_type& at (const key_type& k) const; //
 
 			/* Modifiers */
 			pair<iterator,bool> insert (const value_type& val);
 			iterator insert (iterator hint, const value_type& val);	
 			template <class InputIterator>
-			void insert (InputIterator first, InputIterator last);
-			void erase (iterator position);
-			size_type erase (const key_type& k);
-			void erase (iterator first, iterator last);
+			void insert (InputIterator first, InputIterator last); //
+			void erase (iterator position); //
+			size_type erase (const key_type& k); //
+			void erase (iterator first, iterator last); //
 			void swap (map& x);
 			void clear();
 
 			/* Observers */
-			key_compare key_comp() const;
-			value_compare value_comp() const;
+			key_compare key_comp() const; //
+			value_compare value_comp() const; // a revoir
 
 			/* Operations */
-			iterator find (const key_type& k);
-			const_iterator find (const key_type& k) const;
-			size_type count (const key_type& k) const;
-			iterator lower_bound (const key_type& k);
-			const_iterator lower_bound (const key_type& k) const;
-			iterator upper_bound (const key_type& k);
-			const_iterator upper_bound (const key_type& k) const;
-			pair<const_iterator,const_iterator>	equal_range (const key_type& k) const;
-			pair<iterator,iterator>	equal_range (const key_type& k);
+			iterator find (const key_type& k); //
+			const_iterator find (const key_type& k) const; //
+			size_type count (const key_type& k) const; //
+			iterator lower_bound (const key_type& k); //
+			const_iterator lower_bound (const key_type& k) const; //
+			iterator upper_bound (const key_type& k); //
+			const_iterator upper_bound (const key_type& k) const; //
+			pair<const_iterator,const_iterator>	equal_range (const key_type& k) const; //
+			pair<iterator,iterator>	equal_range (const key_type& k); //
 
 
 		private:
-			typedef __bst<value_type, key_compare, allocator_type>	KeyValBST;
-			
+
 			KeyValBST		_tree;
 
+			template <class InputIterator>
+			void	__insert_tag(InputIterator first, InputIterator last, ft::input_iterator_tag);
+			template <class ForwardIterator>
+			void	__insert_tag(ForwardIterator first, ForwardIterator last, ft::forward_iterator_tag);
+			template <class InputIterator>
+			void	__insert_tag(InputIterator first, InputIterator last, std::input_iterator_tag);
+			template <class ForwardIterator>
+			void	__insert_tag(ForwardIterator first, ForwardIterator last, std::forward_iterator_tag);
+
+		//TO DELETE
+		public:
+			void	__print_tree() {_tree.__print();}
 	};
 
 	/* --------------------------------------------------------------------------
@@ -209,41 +142,39 @@ namespace ft
 		
 	-------------------------------------------------------------------------- */
 	template < class Key, class T, class Comp, class Alloc>
-	map<Key,T,Comp,Alloc>::map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
-	{
-
-	}
+	map<Key,T,Comp,Alloc>::map (const key_compare& comp, const allocator_type& alloc)
+		:	_tree(comp, alloc)
+	{ }
 
 	template < class Key, class T, class Comp, class Alloc>
 	template <class InputIterator>
-	map<Key,T,Comp,Alloc>::map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
+	map<Key,T,Comp,Alloc>::map (InputIterator first, InputIterator last, const key_compare& comp, const allocator_type& alloc)
+		:	_tree(comp, alloc)
 	{
-
+		insert(first, last);
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
-	map<Key,T,Comp,Alloc>::map (const map& x)
-	{
-
-	}
+	map<Key,T,Comp,Alloc>::map (const map<Key,T,Comp,Alloc>& x)
+		:	_tree(x._tree)
+	{ }
 
 	template < class Key, class T, class Comp, class Alloc>
 	map<Key,T,Comp,Alloc>::~map()
-	{
-
-	}
+	{ }
 
 	template < class Key, class T, class Comp, class Alloc>
 	map<Key,T,Comp,Alloc>& map<Key,T,Comp,Alloc>::operator= (const map<Key,T,Comp,Alloc>& x)
 	{
-
+		_tree = x._tree;
+		return (*this);
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::allocator_type
 	map<Key,T,Comp,Alloc>::get_allocator() const
 	{
-
+		return (_tree.get_alloc());
 	}
 
 	/* --------------------------------------------------------------------------
@@ -256,28 +187,28 @@ namespace ft
 	typename map<Key,T,Comp,Alloc>::iterator
 	map<Key,T,Comp,Alloc>::begin()
 	{
-		
+		return (_tree.begin());
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::const_iterator
 	map<Key,T,Comp,Alloc>::begin() const
 	{
-		
+		return (_tree.begin());
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::iterator
 	map<Key,T,Comp,Alloc>::end()
 	{
-		
+		return (_tree.end());
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::const_iterator
 	map<Key,T,Comp,Alloc>::end() const
 	{
-		
+		return (_tree.end());
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
@@ -331,7 +262,7 @@ namespace ft
 	typename map<Key,T,Comp,Alloc>::size_type
 	map<Key,T,Comp,Alloc>::max_size() const
 	{
-		allocator_type().maxsize();
+		return (_tree.max_size());
 	}
 	
 	/* --------------------------------------------------------------------------
@@ -344,21 +275,31 @@ namespace ft
 	typename map<Key,T,Comp,Alloc>::mapped_type&
 	map<Key,T,Comp,Alloc>::operator[] (const key_type& k)
 	{
+		iterator	el = insert(ft::make_pair(k,mapped_type())).first;
 
+		return ((*el).second);
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::mapped_type&
 	map<Key,T,Comp,Alloc>::at (const key_type& k)
 	{
+		iterator it = find(k);
 
+		if (it == end())
+			throw (std::out_of_range("map"));
+		return ((*it).second); //get mapped type ainsi value_type peut etre n'importe quoi
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	const typename map<Key,T,Comp,Alloc>::mapped_type&
 	map<Key,T,Comp,Alloc>::at (const key_type& k) const
 	{
+		const_iterator it = find(k);
 
+		if (it == end())
+			throw (std::out_of_range("map"));
+		return ((*it).second);
 	}
 
 	/* --------------------------------------------------------------------------
@@ -372,52 +313,87 @@ namespace ft
 	pair<typename map<Key,T,Comp,Alloc>::iterator,bool>
 	map<Key,T,Comp,Alloc>::insert (const value_type& val)
 	{
-
+		return (_tree.insert(val));
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
-	map<Key,T,Comp,Alloc>::iterator
+	typename map<Key,T,Comp,Alloc>::iterator
 	map<Key,T,Comp,Alloc>::insert (iterator hint, const value_type& val)
 	{
+		(void)hint;
+		return (_tree.insert(val).first); //ignoring the hint
+	}
+	
+	template < class Key, class T, class Comp, class Alloc>
+	template <class _Iter>
+	void map<Key,T,Comp,Alloc>::insert (_Iter first, _Iter last)
+	{
+		__insert_tag(first, last, typename iterator_traits<_Iter>::iterator_category());
+	}
 
+	template < class Key, class T, class Comp, class Alloc>
+	template <class InputIterator>
+	void	map<Key,T,Comp,Alloc>::__insert_tag(InputIterator first, InputIterator last, ft::input_iterator_tag)
+	{
+		for (; first != last;)
+			insert(*first);
+	}
+	
+	template < class Key, class T, class Comp, class Alloc>
+	template <class ForwardIterator>
+	void	map<Key,T,Comp,Alloc>::__insert_tag(ForwardIterator first, ForwardIterator last, ft::forward_iterator_tag)
+	{
+		for (; first != last; first++)
+			insert(*first);
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
 	template <class InputIterator>
-	void map<Key,T,Comp,Alloc>::insert (InputIterator first, InputIterator last)
+	void	map<Key,T,Comp,Alloc>::__insert_tag(InputIterator first, InputIterator last, std::input_iterator_tag)
 	{
-
+		for (; first != last;)
+			insert(*first);
+	}
+	
+	template < class Key, class T, class Comp, class Alloc>
+	template <class ForwardIterator>
+	void	map<Key,T,Comp,Alloc>::__insert_tag(ForwardIterator first, ForwardIterator last, std::forward_iterator_tag)
+	{
+		for (; first != last; first++)
+			insert(*first);
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
 	void map<Key,T,Comp,Alloc>::erase (iterator position)
 	{
-
+		(void)position;
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::size_type
 	map<Key,T,Comp,Alloc>::erase (const key_type& k)
 	{
-
+		(void)k;
+		return (1);
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
 	void map<Key,T,Comp,Alloc>::erase (iterator first, iterator last)
 	{
-
+		(void)first;
+		(void)last;
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
 	void map<Key,T,Comp,Alloc>::swap (map& x)
 	{
-
+		swap(this->_tree, x._tree);
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
 	void map<Key,T,Comp,Alloc>::clear()
 	{
-
+		_tree.clear();
 	}
 
 	/* --------------------------------------------------------------------------
@@ -430,14 +406,14 @@ namespace ft
 	typename map<Key,T,Comp,Alloc>::key_compare
 	map<Key,T,Comp,Alloc>::key_comp() const
 	{
-		
+		return (this->_tree.value_comp().comp);
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::value_compare
 	map<Key,T,Comp,Alloc>::value_comp() const
 	{
-		
+		return (this->_tree.value_comp());
 	}
 
 	/* --------------------------------------------------------------------------
@@ -451,63 +427,63 @@ namespace ft
 	typename map<Key,T,Comp,Alloc>::iterator
 	map<Key,T,Comp,Alloc>::find (const key_type& k)
 	{
-
+		return (_tree.find(k));
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::const_iterator
 	map<Key,T,Comp,Alloc>::find (const key_type& k) const
 	{
-
+		return (_tree.find(k));
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::size_type
 	map<Key,T,Comp,Alloc>::count (const key_type& k) const
 	{
-
+		return (_tree.count(k));	
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::iterator
 	map<Key,T,Comp,Alloc>::lower_bound (const key_type& k)
 	{
-
+		return (_tree.lower_bound(k));
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::const_iterator
 	map<Key,T,Comp,Alloc>::lower_bound (const key_type& k) const
 	{
-
+		return (_tree.lower_bound(k));
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::iterator
 	map<Key,T,Comp,Alloc>::upper_bound (const key_type& k)
 	{
-
+		return (_tree.upper_bound(k));
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::const_iterator
 	map<Key,T,Comp,Alloc>::upper_bound (const key_type& k) const
 	{
-
+		return (_tree.upper_bound(k));
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	pair<typename map<Key,T,Comp,Alloc>::const_iterator, typename map<Key,T,Comp,Alloc>::const_iterator>	
 	map<Key,T,Comp,Alloc>::equal_range (const key_type& k) const
 	{
-
+		return (make_pair(lower_bound(k), upper_bound(k)));
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	pair<typename map<Key,T,Comp,Alloc>::iterator,typename map<Key,T,Comp,Alloc>::iterator>
 	map<Key,T,Comp,Alloc>::equal_range (const key_type& k)
 	{
-
+		return (make_pair(lower_bound(k), upper_bound(k))); //il y a mieux, faire un appel a upped bound a partir du resultat de lower_bound?
 	}
 
 	/* --------------------------------------------------------------------------
