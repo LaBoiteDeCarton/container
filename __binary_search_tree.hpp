@@ -2,6 +2,7 @@
 # define __BINARY_SEARCH_TREE_HPP
 #include <memory> // std::allocator
 #include "utility.hpp" // ft::pair
+#include "algorithme.hpp" // ft::swap
 
 //To delete
 #include <iostream>
@@ -14,28 +15,24 @@ namespace ft
 		
 	-------------------------------------------------------------------------- */
 
+	template<class T, class NodeType> class	__tree_bidirectional_const_iter;
 
 	template<class T, class NodeType> //l'iterator peut aller avec nimporte quel arbre tant qu'il respect la bidirectionalité et l'ordre
 	class __tree_bidirectional_iter: public iterator<bidirectional_iterator_tag, T>
 	{
 	private:
 		typedef NodeType				Node;
-		//typedef Node*					NodePtr;
+		template<class,class> friend class __tree_bidirectional_const_iter;
 	public:
 		__tree_bidirectional_iter(); //create nullptr
 		__tree_bidirectional_iter(Node *node);
-		__tree_bidirectional_iter(const __tree_bidirectional_iter& x);
+		__tree_bidirectional_iter(const __tree_bidirectional_iter<T,NodeType>& x);
 		~__tree_bidirectional_iter();
 		
 		__tree_bidirectional_iter& operator=(const __tree_bidirectional_iter& x);
 		
 		T&	operator*() const;
 		T	*operator->() const;
-		operator __tree_bidirectional_iter<const T, NodeType>() { __tree_bidirectional_iter<const T, NodeType> c_it;
-			c_it.node = this->node; return c_it;}; //bizzarre ce truc
-
-		// const T&	operator*() const;
-		// const T		*operator->() const; //bizzare, j'aime pas
 
 		__tree_bidirectional_iter& operator++();
 		__tree_bidirectional_iter operator++(int);
@@ -44,6 +41,8 @@ namespace ft
 
 		template<class _T, class _NodeType>
 		friend bool operator== (const __tree_bidirectional_iter<_T,_NodeType>& lhs, const __tree_bidirectional_iter<_T,_NodeType>& rhs);
+		template<class _T, class _NodeType>
+		friend bool operator== (const __tree_bidirectional_iter<_T,_NodeType>& lhs, const __tree_bidirectional_const_iter<_T,_NodeType>& rhs);
 	public:
 		Node							*node;
 	};
@@ -62,6 +61,16 @@ namespace ft
 	__tree_bidirectional_iter<T,NodeType>::__tree_bidirectional_iter(const __tree_bidirectional_iter<T,NodeType>& x)
 		:	node(x.node)
 	{ }
+
+	// template<class T, class NodeType>
+	// __tree_bidirectional_iter<T,NodeType>::__tree_bidirectional_iter(const __tree_bidirectional_iter<const T,NodeType>& x)
+	// 	:	node(x.node)
+	// { }
+
+	// template<class T, class NodeType>
+	// __tree_bidirectional_iter<T,NodeType>::__tree_bidirectional_iter(const __tree_bidirectional_const_iter<T,NodeType>& x)
+	// 	:	node(x.node)
+	// { }
 
 	template<class T, class NodeType>
 	__tree_bidirectional_iter<T,NodeType>::~__tree_bidirectional_iter()
@@ -154,156 +163,167 @@ namespace ft
 		return (!(lhs == rhs));
 	}
 
-	// /* --------------------------------------------------------------------------
+	/* --------------------------------------------------------------------------
 
-	// 	CONST ITERATOR FOR IDIRECTIONAL ORDERED TREE
+		CONST ITERATOR FOR IDIRECTIONAL ORDERED TREE
 		
-	// -------------------------------------------------------------------------- */
+	-------------------------------------------------------------------------- */
 
 
-	// template<class T, class NodeType> //l'iterator peut aller avec nimporte quel arbre tant qu'il respect la bidirectionalité et l'ordre
-	// class __tree_bidirectional_const_iter: public iterator<bidirectional_iterator_tag, T>
-	// {
-	// private:
-	// 	typedef NodeType				Node;
-	// 	//typedef Node*					NodePtr;
-	// public:
-	// 	__tree_bidirectional_const_iter(); //create nullptr
-	// 	__tree_bidirectional_const_iter(Node *node);
-	// 	__tree_bidirectional_const_iter(const __tree_bidirectional_const_iter& x);
-	// 	__tree_bidirectional_const_iter(const __tree_bidirectional_iter<T,NodeType>& x);
-	// 	~__tree_bidirectional_const_iter();
+	template<class T, class NodeType> //l'iterator peut aller avec nimporte quel arbre tant qu'il respect la bidirectionalité et l'ordre
+	class __tree_bidirectional_const_iter: public iterator<bidirectional_iterator_tag, T>
+	{
+	private:
+		typedef NodeType								Node;
+		//typedef Node*					NodePtr;
+	public:
+		__tree_bidirectional_const_iter(); //create nullptr
+		__tree_bidirectional_const_iter(Node *node);
+		__tree_bidirectional_const_iter(const __tree_bidirectional_const_iter& x);
+		__tree_bidirectional_const_iter(__tree_bidirectional_iter<T,NodeType> x);
+		~__tree_bidirectional_const_iter();
 		
-	// 	__tree_bidirectional_const_iter& operator=(const __tree_bidirectional_const_iter& x);
+		__tree_bidirectional_const_iter& operator=(const __tree_bidirectional_const_iter& x);
 		
-	// 	const T&	operator*() const;
-	// 	const T		*operator->() const;
+		const T&	operator*() const;
+		const T		*operator->() const;
 
-	// 	// const T&	operator*() const;
-	// 	// const T		*operator->() const; //bizzare, j'aime pas
+		__tree_bidirectional_const_iter& operator++();
+		__tree_bidirectional_const_iter operator++(int);
+		__tree_bidirectional_const_iter& operator--();
+		__tree_bidirectional_const_iter operator--(int);
 
-	// 	__tree_bidirectional_const_iter& operator++();
-	// 	__tree_bidirectional_const_iter operator++(int);
-	// 	__tree_bidirectional_const_iter& operator--();
-	// 	__tree_bidirectional_const_iter operator--(int);
+		template<class _T, class _NodeType>
+		friend bool operator== (const __tree_bidirectional_const_iter<_T,_NodeType>& lhs, const __tree_bidirectional_const_iter<_T,_NodeType>& rhs);
+		template<class _T, class _NodeType>
+		friend bool operator== (const __tree_bidirectional_const_iter<_T,_NodeType>& lhs, const __tree_bidirectional_iter<_T,_NodeType>& rhs);
+	private:
+		template <class,class> friend class __tree_bidirectional_iter;
+		Node							*node;
+	};
 
-	// 	template<class _T, class _NodeType>
-	// 	friend bool operator== (const __tree_bidirectional_const_iter<_T,_NodeType>& lhs, const __tree_bidirectional_const_iter<_T,_NodeType>& rhs);
-	// private:
-	// 	Node							*node;
-	// };
+	template<class T, class NodeType>
+	__tree_bidirectional_const_iter<T,NodeType>::__tree_bidirectional_const_iter()
+		:	node()
+	{ }
 
-	// template<class T, class NodeType>
-	// __tree_bidirectional_const_iter<T,NodeType>::__tree_bidirectional_const_iter()
-	// 	:	node()
-	// { }
-
-	// template<class T, class NodeType>
-	// __tree_bidirectional_const_iter<T,NodeType>::__tree_bidirectional_const_iter(Node *x)
-	// 	:	node(x)
-	// { }
+	template<class T, class NodeType>
+	__tree_bidirectional_const_iter<T,NodeType>::__tree_bidirectional_const_iter(Node *x)
+		:	node(x)
+	{ }
 	
-	// template<class T, class NodeType>
-	// __tree_bidirectional_const_iter<T,NodeType>::__tree_bidirectional_const_iter(const __tree_bidirectional_const_iter<T,NodeType>& x)
-	// 	:	node(x.node)
-	// { }
+	template<class T, class NodeType>
+	__tree_bidirectional_const_iter<T,NodeType>::__tree_bidirectional_const_iter(const __tree_bidirectional_const_iter<T,NodeType>& x)
+		:	node(x.node)
+	{ }
 
-	// template<class T, class NodeType>
-	// __tree_bidirectional_const_iter<T,NodeType>::__tree_bidirectional_const_iter(const __tree_bidirectional_iter<T,NodeType>& x)
-	// 	:	node(x.node)
-	// { }
+	template<class T, class NodeType>
+	__tree_bidirectional_const_iter<T,NodeType>::__tree_bidirectional_const_iter(__tree_bidirectional_iter<T,NodeType> x)
+		:	node(x.node)
+	{ }
 
-	// template<class T, class NodeType>
-	// __tree_bidirectional_const_iter<T,NodeType>::~__tree_bidirectional_const_iter()
-	// { }
+	template<class T, class NodeType>
+	__tree_bidirectional_const_iter<T,NodeType>::~__tree_bidirectional_const_iter()
+	{ }
 
-	// template<class T, class NodeType>
-	// __tree_bidirectional_const_iter<T,NodeType>& __tree_bidirectional_const_iter<T, NodeType>::operator++()
-	// {
-	// 	if (this->node->right)
-	// 		node = NodeType::smallest(node->right);
-	// 	else
-	// 	{
-	// 		while (node->father && node->father->left != node) //node->father null n'arrive jamais // ah bon?
-	// 			node = node->father;
-	// 		node = node->father;
-	// 	}
-	// 	return (*this);
-	// }
+	template<class T, class NodeType>
+	__tree_bidirectional_const_iter<T,NodeType>& __tree_bidirectional_const_iter<T, NodeType>::operator++()
+	{
+		if (this->node->right)
+			node = NodeType::smallest(node->right);
+		else
+		{
+			while (node->father && node->father->left != node) //node->father null n'arrive jamais // ah bon?
+				node = node->father;
+			node = node->father;
+		}
+		return (*this);
+	}
 
-	// template<class T, class NodeType>
-	// __tree_bidirectional_const_iter<T,NodeType> __tree_bidirectional_const_iter<T, NodeType>::operator++(int)
-	// {
-	// 	__tree_bidirectional_const_iter tmp(*this);
-	// 	++(*this);
-	// 	return (tmp);
-	// }
+	template<class T, class NodeType>
+	__tree_bidirectional_const_iter<T,NodeType> __tree_bidirectional_const_iter<T, NodeType>::operator++(int)
+	{
+		__tree_bidirectional_const_iter tmp(*this);
+		++(*this);
+		return (tmp);
+	}
 
-	// template<class T, class NodeType>
-	// __tree_bidirectional_const_iter<T,NodeType>& __tree_bidirectional_const_iter<T, NodeType>::operator--()
-	// {
-	// 	if (this->node->left)
-	// 		node = NodeType::biggest(node->left);
-	// 	else
-	// 	{
-	// 		while (node->father && node->father->right != node) //node->father null n'arrive jamais
-	// 			node = node->father;
-	// 		node = node->father;
-	// 	}
-	// 	return (*this);
-	// }
+	template<class T, class NodeType>
+	__tree_bidirectional_const_iter<T,NodeType>& __tree_bidirectional_const_iter<T, NodeType>::operator--()
+	{
+		if (this->node->left)
+			node = NodeType::biggest(node->left);
+		else
+		{
+			while (node->father && node->father->right != node) //node->father null n'arrive jamais
+				node = node->father;
+			node = node->father;
+		}
+		return (*this);
+	}
 
-	// template<class T, class NodeType>
-	// __tree_bidirectional_const_iter<T,NodeType> __tree_bidirectional_const_iter<T, NodeType>::operator--(int)
-	// {
-	// 	__tree_bidirectional_const_iter tmp(*this);
-	// 	++(*this);
-	// 	return (tmp);
-	// }
+	template<class T, class NodeType>
+	__tree_bidirectional_const_iter<T,NodeType> __tree_bidirectional_const_iter<T, NodeType>::operator--(int)
+	{
+		__tree_bidirectional_const_iter tmp(*this);
+		++(*this);
+		return (tmp);
+	}
 
-	// template<class T, class NodeType>
-	// const T& __tree_bidirectional_const_iter<T, NodeType>::operator*() const
-	// {
-	// 	return (node->content);
-	// }
+	template<class T, class NodeType>
+	const T& __tree_bidirectional_const_iter<T, NodeType>::operator*() const
+	{
+		return (node->content);
+	}
 
-	// // template<class T, class NodeType>
-	// // const T& __tree_bidirectional_const_iter<T, NodeType>::operator*() const
-	// // {
-	// // 	return (node->content);
-	// // }
+	template<class T, class NodeType>
+	const T	*__tree_bidirectional_const_iter<T, NodeType>::operator->() const
+	{
+		return (&(node->content));
+	}
 
-	// template<class T, class NodeType>
-	// const T	*__tree_bidirectional_const_iter<T, NodeType>::operator->() const
-	// {
-	// 	return (&(node->content));
-	// }
+	template<class T, class NodeType>
+	__tree_bidirectional_const_iter<T,NodeType>& __tree_bidirectional_const_iter<T, NodeType>::operator=(const __tree_bidirectional_const_iter<T, NodeType>& x)
+	{
+		this->node = x.node;
+		return (*this);
+	}
 
-	// // template<class T, class NodeType>
-	// // const T	*__tree_bidirectional_const_iter<T, NodeType>::operator->() const
-	// // {
-	// // 	return (&(node->content));
-	// // }
+	template<class T, class NodeType>
+	bool operator== (const __tree_bidirectional_const_iter<T, NodeType>& lhs, const __tree_bidirectional_const_iter<T, NodeType>& rhs)
+	{
+		return (lhs.node == rhs.node);
+	}
 
-	// template<class T, class NodeType>
-	// __tree_bidirectional_const_iter<T,NodeType>& __tree_bidirectional_const_iter<T, NodeType>::operator=(const __tree_bidirectional_const_iter<T, NodeType>& x)
-	// {
-	// 	this->node = x.node;
-	// 	return (*this);
-	// }
+	template<class T, class NodeType>
+	bool operator== (const __tree_bidirectional_const_iter<T, NodeType>& lhs, const __tree_bidirectional_iter<T, NodeType>& rhs)
+	{
+		return (lhs.node == rhs.node);
+	}
 
-	// template<class T, class NodeType>
-	// bool operator== (const __tree_bidirectional_const_iter<T, NodeType>& lhs, const __tree_bidirectional_const_iter<T, NodeType>& rhs)
-	// {
-	// 	return (lhs.node == rhs.node);
-	// }
+	template<class T, class NodeType>
+	bool operator== (const __tree_bidirectional_iter<T, NodeType>& lhs, const __tree_bidirectional_const_iter<T, NodeType>& rhs)
+	{
+		return (lhs.node == rhs.node);
+	}
 
-	// template<class T, class NodeType>
-	// bool operator!= (const __tree_bidirectional_const_iter<T, NodeType>& lhs, const __tree_bidirectional_const_iter<T, NodeType>& rhs)
-	// {
-	// 	return (!(lhs == rhs));
-	// }	
+	template<class T, class NodeType>
+	bool operator!= (const __tree_bidirectional_const_iter<T, NodeType>& lhs, const __tree_bidirectional_const_iter<T, NodeType>& rhs)
+	{
+		return (!(lhs == rhs));
+	}	
 
+	template<class T, class NodeType>
+	bool operator!= (const __tree_bidirectional_const_iter<T, NodeType>& lhs, const __tree_bidirectional_iter<T, NodeType>& rhs)
+	{
+		return (!(lhs == rhs));
+	}
+
+	template<class T, class NodeType>
+	bool operator!= (const __tree_bidirectional_iter<T, NodeType>& lhs, const __tree_bidirectional_const_iter<T, NodeType>& rhs)
+	{
+		return (!(lhs == rhs));
+	}	
 
 	/* --------------------------------------------------------------------------
 
@@ -324,7 +344,7 @@ namespace ft
 		// _node_bst_add_left();
 		// _node_bst_add_right();
 		T			content;
-		//bool		is_red;
+		bool		is_red;
 		_NodePtr	father;
 		_NodePtr	left;
 		_NodePtr	right;
@@ -385,7 +405,7 @@ namespace ft
 			//typedef typename Node::_NodePtr								_NodePtr; est-ce que c'est pas mieux ça?
 		public: 
 			typedef __tree_bidirectional_iter<value_type, Node>				iterator;
-			typedef __tree_bidirectional_iter<const value_type, Node>	const_iterator;
+			typedef __tree_bidirectional_const_iter<value_type, Node>		const_iterator;
 
 			/* Constructors */
 			__bst(const value_compare& val = value_compare(), const allocator_type& alloc = allocator_type());
@@ -402,8 +422,8 @@ namespace ft
 			const_iterator		end() const;
 			size_type			size() const;
 			pair<iterator,bool>	insert(const value_type& val);
-			template <class _Iter>
-			void				insert(_Iter first, _Iter last);
+			// template <class _Iter>
+			// void				insert(_Iter first, _Iter last);
 			iterator			find(const key_type& k);
 			const_iterator		find(const key_type& k) const;
 			size_type			count(const key_type& k) const;
@@ -424,16 +444,16 @@ namespace ft
 			_NodePtr			__first_after_key_included(const key_type& k) const;
 			_NodePtr			__first_after_key(const key_type& k) const;
 
-			template <class _Iter>
-			void				__insert_range(_Iter first, _Iter last);
-			template <class _Iter>
-			void				__insert_range(_Iter first, _Iter last, ft::input_iterator_tag);
-			template <class _Iter>
-			void				__insert_range(_Iter first, _Iter last, ft::forward_iterator_tag);
-			template <class _Iter>
-			void				__insert_range(_Iter first, _Iter last, std::input_iterator_tag);
-			template <class _Iter>
-			void				__insert_range(_Iter first, _Iter last, std::forward_iterator_tag);
+			// template <class _Iter>
+			// void				__insert_range(_Iter first, _Iter last);
+			// template <class _Iter>
+			// void				__insert_range(_Iter first, _Iter last, ft::input_iterator_tag);
+			// template <class _Iter>
+			// void				__insert_range(_Iter first, _Iter last, ft::forward_iterator_tag);
+			// template <class _Iter>
+			// void				__insert_range(_Iter first, _Iter last, std::input_iterator_tag);
+			// template <class _Iter>
+			// void				__insert_range(_Iter first, _Iter last, std::forward_iterator_tag);
 
 			void			swap(__bst& x);
 
@@ -493,15 +513,21 @@ namespace ft
 		_root.father = NULL;
 		_size = 0;
 		_begin = _root.right;
+		*this = x;
 	}
 
 	template<class T, class Compare, class Alloc>
 	__bst<T,Compare,Alloc>& __bst<T,Compare,Alloc>::operator=(const __bst<T,Compare,Alloc>& x)
 	{
+		this->_node_alloc = x._node_alloc;
+		this->_value_comp = x._value_comp;
 		this->clear();
-		(void)x;
+		const_iterator c_it = x.begin();
+		const_iterator c_end = x.end();
+
+		for (; c_it != c_end; c_it++)
+			insert(*c_it);
 		return (*this);
-		//copy profonde
 	}
 
 	template<class T, class Compare, class Alloc>
@@ -571,7 +597,7 @@ namespace ft
 
 		if (leaf == NULL)
 		{
-			//leaf = __new_node(val);
+			//leaf = __new_node(val); __add_node_to(leaf, leaf_father, val)
 			leaf = _node_alloc.allocate(1);
 			_node_alloc.construct(leaf, val);
 			leaf->father = leaf_father;

@@ -72,8 +72,8 @@ namespace ft
 			allocator_type get_allocator() const;
 
 			/* Iterators */
-			iterator begin();
 			const_iterator begin() const;
+			iterator begin();
 			iterator end();
 			const_iterator end() const;
 			reverse_iterator rbegin();
