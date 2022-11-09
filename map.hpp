@@ -7,7 +7,7 @@
 #include <memory>						//	std::allocator
 #include <functional>					//	std::less && std::binary_function
 #include "utility.hpp"					//	ft::pair
-#include "algorithme.hpp"				//	ft::equal
+#include "algorithme.hpp"				//	ft::equal ft::swap
 #include "iterator.hpp"					//	ft::iterator, ft::iterator_traits, ft::bidirectional_iterator_tag
 #include "__binary_search_tree.hpp"		//	ft::__bst
 
@@ -385,9 +385,9 @@ namespace ft
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
-	void map<Key,T,Comp,Alloc>::swap (map& x)
+	void map<Key,T,Comp,Alloc>::swap (map<Key,T,Comp,Alloc>& x)
 	{
-		swap(this->_tree, x._tree);
+		this->_tree.swap(x._tree);
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
@@ -483,7 +483,7 @@ namespace ft
 	pair<typename map<Key,T,Comp,Alloc>::iterator,typename map<Key,T,Comp,Alloc>::iterator>
 	map<Key,T,Comp,Alloc>::equal_range (const key_type& k)
 	{
-		return (make_pair(lower_bound(k), upper_bound(k))); //il y a mieux, faire un appel a upped bound a partir du resultat de lower_bound?
+		return (make_pair(lower_bound(k), upper_bound(k))); //il y a mieux, faire un appel a upped bound a partir du resultat de lower_bound? ou just faire ++ si lower_boudn egal
 	}
 
 	/* --------------------------------------------------------------------------

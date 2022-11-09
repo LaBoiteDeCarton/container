@@ -339,7 +339,6 @@ namespace ft
 		_node_bst();
 		_node_bst(const T& val);
 
-		_node_bst& operator=(const _node_bst& x);
 
 		// _node_bst_add_left();
 		// _node_bst_add_right();
@@ -362,6 +361,7 @@ namespace ft
 			return (start);
 		}
 	private:
+		_node_bst& operator=(const _node_bst& x);
 	};
 
 	template<class T>
@@ -382,10 +382,11 @@ namespace ft
 	template<class T>
 	_node_bst<T>& _node_bst<T>::operator=(const _node_bst<T>& x)
 	{
-		content = x.content;
-		father = x.father;
-		left = x.left;
-		right = x.right;
+		(void)x;
+		// content = x.content;
+		// father = x.father;
+		// left = x.left;
+		// right = x.right;
 	}
 
 	template<class T, class ValComp, class Alloc = std::allocator<T> >
@@ -454,9 +455,8 @@ namespace ft
 			// void				__insert_range(_Iter first, _Iter last, std::input_iterator_tag);
 			// template <class _Iter>
 			// void				__insert_range(_Iter first, _Iter last, std::forward_iterator_tag);
-
-			void			swap(__bst& x);
-
+		public:	
+			void					swap(__bst& x);
 		private:
 			_NodePtr				_begin;
 			_EndNode				_root; //right is end, so it itself, left is the first node. If nothing, is itself so as begin == end. Father is always nullptr
@@ -614,11 +614,15 @@ namespace ft
 	template<class T, class Compare, class Alloc>
 	void __bst<T,Compare,Alloc>::swap(__bst<T,Compare,Alloc>& x)
 	{
-		swap(this->_begin, x._begin);
-		swap(this->_size, x._size);
-		swap(this->_root, x._root);
-		swap(this->_node_alloc, x._node_alloc);
-		swap(this->_value_comp, x._value_comp);
+		ft::swap(this->_root.left, x._root.left);
+		if (this->_root.left)
+			this->_root.left->father = this->_root.right;
+		if (x._root.left)
+			x._root.left->father = x._root.right; //barbare
+		ft::swap(this->_begin, x._begin);
+		ft::swap(this->_size, x._size);
+		ft::swap(this->_node_alloc, x._node_alloc);
+		ft::swap(this->_value_comp, x._value_comp);
 	}
 
 	template<class T, class Compare, class Alloc>
@@ -826,11 +830,12 @@ namespace ft
 		
 	-------------------------------------------------------------------------- */
 
-	template<class T, class Compare, class Alloc>
-	void swap (__bst<T,Compare,Alloc>& x, __bst<T,Compare,Alloc>& y)
-	{
-		x.swap(y);
-	}
+	// not interesting because __bst should not exist outside the container use x.swap(y) directly;
+	// template<class T, class Compare, class Alloc>
+	// void swap (__bst<T,Compare,Alloc>& x, __bst<T,Compare,Alloc>& y)
+	// {
+	// 	x.swap(y);
+	// }
 }
 
 #endif
