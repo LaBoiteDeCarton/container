@@ -122,9 +122,9 @@ namespace ft
 	typename reverse_iterator<Iterator>::reference
 	reverse_iterator<Iterator>::operator*() const
 	{
-		Iterator temp(this->_base);
-		return (*--temp);
-		//return (*(this->_base - 1));
+		iterator_type temp(this->_base);
+		--temp;
+		return (*temp);
 	}
 	
 	template<class Iterator>

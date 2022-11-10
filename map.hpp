@@ -8,12 +8,8 @@
 #include <functional>					//	std::less && std::binary_function
 #include "utility.hpp"					//	ft::pair
 #include "algorithme.hpp"				//	ft::equal ft::swap
-#include "iterator.hpp"					//	ft::iterator, ft::iterator_traits, ft::bidirectional_iterator_tag
+#include "iterator.hpp"					//	ft::iterator, ft::iterator_traits, ft::bidirectional_iterator_tag, ft::reverse_iterator
 #include "__binary_search_tree.hpp"		//	ft::__bst
-
-
-//to delete this include
-#include <map>
 
 namespace ft
 {
@@ -50,16 +46,15 @@ namespace ft
 			};
 
 		private:
+			/* Defininf the tree we are using. If you want to change the tree, change here the type definition */
 			typedef __bst<value_type, value_compare, allocator_type>		KeyValBST;
 		public:
 			typedef typename KeyValBST::iterator							iterator;
 			typedef typename KeyValBST::const_iterator						const_iterator;
 			typedef ft::reverse_iterator<iterator>							reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
-			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type; //c'est du c++11 ça non?
+			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
 			typedef size_t													size_type;
-
-
 
 			/* Contructors */
 			explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type());	
@@ -87,54 +82,87 @@ namespace ft
 			size_type max_size() const;
 
 			/* Element access */
-			mapped_type& operator[] (const key_type& k); //
-			mapped_type& at (const key_type& k); //
-			const mapped_type& at (const key_type& k) const; //
+			mapped_type& operator[] (const key_type& k);
+			mapped_type& at (const key_type& k);
+			const mapped_type& at (const key_type& k) const;
 
 			/* Modifiers */
 			pair<iterator,bool> insert (const value_type& val);
 			iterator insert (iterator hint, const value_type& val);	
 			template <class InputIterator>
-			void insert (InputIterator first, InputIterator last); //
-			void erase (iterator position); //
-			size_type erase (const key_type& k); //
-			void erase (iterator first, iterator last); //
+			void insert (InputIterator first, InputIterator last);
+			void erase (iterator position);
+			size_type erase (const key_type& k);
+			void erase (iterator first, iterator last);
 			void swap (map& x);
 			void clear();
 
 			/* Observers */
-			key_compare key_comp() const; //
-			value_compare value_comp() const; // a revoir
+			key_compare key_comp() const;
+			value_compare value_comp() const;
 
 			/* Operations */
-			iterator find (const key_type& k); //
-			const_iterator find (const key_type& k) const; //
-			size_type count (const key_type& k) const; //
-			iterator lower_bound (const key_type& k); //
-			const_iterator lower_bound (const key_type& k) const; //
-			iterator upper_bound (const key_type& k); //
-			const_iterator upper_bound (const key_type& k) const; //
-			pair<const_iterator,const_iterator>	equal_range (const key_type& k) const; //
-			pair<iterator,iterator>	equal_range (const key_type& k); //
-
+			iterator find (const key_type& k);
+			const_iterator find (const key_type& k) const;
+			size_type count (const key_type& k) const;
+			iterator lower_bound (const key_type& k);
+			const_iterator lower_bound (const key_type& k) const;
+			iterator upper_bound (const key_type& k);
+			const_iterator upper_bound (const key_type& k) const;
+			pair<const_iterator,const_iterator>	equal_range (const key_type& k) const;
+			pair<iterator,iterator>	equal_range (const key_type& k);
 
 		private:
-
 			KeyValBST		_tree;
 
 			template <class InputIterator>
 			void	__insert_tag(InputIterator first, InputIterator last, ft::input_iterator_tag);
 			template <class ForwardIterator>
 			void	__insert_tag(ForwardIterator first, ForwardIterator last, ft::forward_iterator_tag);
+			/* STD COMPATIBILITY std::*_iterator_tag */
 			template <class InputIterator>
 			void	__insert_tag(InputIterator first, InputIterator last, std::input_iterator_tag);
 			template <class ForwardIterator>
 			void	__insert_tag(ForwardIterator first, ForwardIterator last, std::forward_iterator_tag);
-
-		//TO DELETE
-		public:
-			void	__print_tree() {_tree.__print();}
 	};
+
+	/* --------------------------------------------------------------------------
+
+		PRIVATE FUNCTIONS
+		
+	-------------------------------------------------------------------------- */
+
+	template < class Key, class T, class Comp, class Alloc>
+	template <class InputIterator>
+	void	map<Key,T,Comp,Alloc>::__insert_tag(InputIterator first, InputIterator last, ft::input_iterator_tag)
+	{
+		for (; first != last;)
+			insert(*first);
+	}
+	
+	template < class Key, class T, class Comp, class Alloc>
+	template <class ForwardIterator>
+	void	map<Key,T,Comp,Alloc>::__insert_tag(ForwardIterator first, ForwardIterator last, ft::forward_iterator_tag)
+	{
+		for (; first != last; first++)
+			insert(*first);
+	}
+	
+	template < class Key, class T, class Comp, class Alloc>
+	template <class InputIterator>
+	void	map<Key,T,Comp,Alloc>::__insert_tag(InputIterator first, InputIterator last, std::input_iterator_tag)
+	{
+		for (; first != last;)
+			insert(*first);
+	}
+	
+	template < class Key, class T, class Comp, class Alloc>
+	template <class ForwardIterator>
+	void	map<Key,T,Comp,Alloc>::__insert_tag(ForwardIterator first, ForwardIterator last, std::forward_iterator_tag)
+	{
+		for (; first != last; first++)
+			insert(*first);
+	}
 
 	/* --------------------------------------------------------------------------
 
@@ -288,7 +316,7 @@ namespace ft
 
 		if (it == end())
 			throw (std::out_of_range("map"));
-		return ((*it).second); //get mapped type ainsi value_type peut etre n'importe quoi
+		return ((*it).second); //get mapped type ainsi value_type peut etre n'importe quoi -> la flemme
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
@@ -330,58 +358,37 @@ namespace ft
 	{
 		__insert_tag(first, last, typename iterator_traits<_Iter>::iterator_category());
 	}
-
-	template < class Key, class T, class Comp, class Alloc>
-	template <class InputIterator>
-	void	map<Key,T,Comp,Alloc>::__insert_tag(InputIterator first, InputIterator last, ft::input_iterator_tag)
-	{
-		for (; first != last;)
-			insert(*first);
-	}
-	
-	template < class Key, class T, class Comp, class Alloc>
-	template <class ForwardIterator>
-	void	map<Key,T,Comp,Alloc>::__insert_tag(ForwardIterator first, ForwardIterator last, ft::forward_iterator_tag)
-	{
-		for (; first != last; first++)
-			insert(*first);
-	}
-	
-	template < class Key, class T, class Comp, class Alloc>
-	template <class InputIterator>
-	void	map<Key,T,Comp,Alloc>::__insert_tag(InputIterator first, InputIterator last, std::input_iterator_tag)
-	{
-		for (; first != last;)
-			insert(*first);
-	}
-	
-	template < class Key, class T, class Comp, class Alloc>
-	template <class ForwardIterator>
-	void	map<Key,T,Comp,Alloc>::__insert_tag(ForwardIterator first, ForwardIterator last, std::forward_iterator_tag)
-	{
-		for (; first != last; first++)
-			insert(*first);
-	}
 	
 	template < class Key, class T, class Comp, class Alloc>
 	void map<Key,T,Comp,Alloc>::erase (iterator position)
 	{
-		(void)position;
+		if (position != end())
+			this->_tree.erase(position);
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
 	typename map<Key,T,Comp,Alloc>::size_type
 	map<Key,T,Comp,Alloc>::erase (const key_type& k)
 	{
-		(void)k;
+		iterator position = find(k);
+
+		if (position == end())
+			return (0);
+		erase(position);
 		return (1);
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
 	void map<Key,T,Comp,Alloc>::erase (iterator first, iterator last)
 	{
-		(void)first;
-		(void)last;
+		iterator next(first);
+
+		for (;first != last; )
+		{
+			next++;
+			erase(first);
+			first = next;
+		}
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
@@ -476,14 +483,26 @@ namespace ft
 	pair<typename map<Key,T,Comp,Alloc>::const_iterator, typename map<Key,T,Comp,Alloc>::const_iterator>	
 	map<Key,T,Comp,Alloc>::equal_range (const key_type& k) const
 	{
-		return (make_pair(lower_bound(k), upper_bound(k)));
+		const_iterator lb = lower_bound(k);
+		const_iterator ub(lb);
+
+		if ((*lb).first == k)
+			ub++;
+		return (make_pair(lb,ub));
+		//return (make_pair(lower_bound(k), upper_bound(k))); // ce return si multiple, si unique autant faire appel a bound qu'une seule fois
 	}
 
 	template < class Key, class T, class Comp, class Alloc>
 	pair<typename map<Key,T,Comp,Alloc>::iterator,typename map<Key,T,Comp,Alloc>::iterator>
 	map<Key,T,Comp,Alloc>::equal_range (const key_type& k)
 	{
-		return (make_pair(lower_bound(k), upper_bound(k))); //il y a mieux, faire un appel a upped bound a partir du resultat de lower_bound? ou just faire ++ si lower_boudn egal
+		iterator lb = lower_bound(k);
+		iterator ub(lb);
+
+		if ((*lb).first == k)
+			ub++;
+		return (make_pair(lb,ub));
+		// return (make_pair(lower_bound(k), upper_bound(k)));
 	}
 
 	/* --------------------------------------------------------------------------

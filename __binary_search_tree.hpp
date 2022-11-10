@@ -6,25 +6,26 @@
 
 //To delete
 #include <iostream>
+#include <map>
 
 namespace ft
 {
 	/* --------------------------------------------------------------------------
 
-		ITERATOR FOR IDIRECTIONAL ORDERED TREE
+		ITERATOR FOR DIRECTIONAL ORDERED TREE
 		
 	-------------------------------------------------------------------------- */
 
 	template<class T, class NodeType> class	__tree_bidirectional_const_iter;
 
-	template<class T, class NodeType> //l'iterator peut aller avec nimporte quel arbre tant qu'il respect la bidirectionalité et l'ordre
+	template<class T, class NodeType>
 	class __tree_bidirectional_iter: public iterator<bidirectional_iterator_tag, T>
 	{
 	private:
 		typedef NodeType				Node;
 		template<class,class> friend class __tree_bidirectional_const_iter;
 	public:
-		__tree_bidirectional_iter(); //create nullptr
+		__tree_bidirectional_iter();
 		__tree_bidirectional_iter(Node *node);
 		__tree_bidirectional_iter(const __tree_bidirectional_iter<T,NodeType>& x);
 		~__tree_bidirectional_iter();
@@ -43,8 +44,11 @@ namespace ft
 		friend bool operator== (const __tree_bidirectional_iter<_T,_NodeType>& lhs, const __tree_bidirectional_iter<_T,_NodeType>& rhs);
 		template<class _T, class _NodeType>
 		friend bool operator== (const __tree_bidirectional_iter<_T,_NodeType>& lhs, const __tree_bidirectional_const_iter<_T,_NodeType>& rhs);
-	public:
+		template<class _T, class _NodeType>
+		friend bool operator== (const __tree_bidirectional_const_iter<_T, _NodeType>& lhs, const __tree_bidirectional_iter<_T, _NodeType>& rhs);
+	private:
 		Node							*node;
+		template <class, class, class> friend class __bst;
 	};
 
 	template<class T, class NodeType>
@@ -62,16 +66,6 @@ namespace ft
 		:	node(x.node)
 	{ }
 
-	// template<class T, class NodeType>
-	// __tree_bidirectional_iter<T,NodeType>::__tree_bidirectional_iter(const __tree_bidirectional_iter<const T,NodeType>& x)
-	// 	:	node(x.node)
-	// { }
-
-	// template<class T, class NodeType>
-	// __tree_bidirectional_iter<T,NodeType>::__tree_bidirectional_iter(const __tree_bidirectional_const_iter<T,NodeType>& x)
-	// 	:	node(x.node)
-	// { }
-
 	template<class T, class NodeType>
 	__tree_bidirectional_iter<T,NodeType>::~__tree_bidirectional_iter()
 	{ }
@@ -83,7 +77,7 @@ namespace ft
 			node = NodeType::smallest(node->right);
 		else
 		{
-			while (node->father && node->father->left != node) //node->father null n'arrive jamais // ah bon?
+			while (node->father && node->father->left != node)
 				node = node->father;
 			node = node->father;
 		}
@@ -105,7 +99,7 @@ namespace ft
 			node = NodeType::biggest(node->left);
 		else
 		{
-			while (node->father && node->father->right != node) //node->father null n'arrive jamais
+			while (node->father && node->father->right != node)
 				node = node->father;
 			node = node->father;
 		}
@@ -116,7 +110,7 @@ namespace ft
 	__tree_bidirectional_iter<T,NodeType> __tree_bidirectional_iter<T, NodeType>::operator--(int)
 	{
 		__tree_bidirectional_iter tmp(*this);
-		++(*this);
+		--(*this);
 		return (tmp);
 	}
 
@@ -126,23 +120,11 @@ namespace ft
 		return (node->content);
 	}
 
-	// template<class T, class NodeType>
-	// const T& __tree_bidirectional_iter<T, NodeType>::operator*() const
-	// {
-	// 	return (node->content);
-	// }
-
 	template<class T, class NodeType>
 	T	*__tree_bidirectional_iter<T, NodeType>::operator->() const
 	{
 		return (&(node->content));
 	}
-
-	// template<class T, class NodeType>
-	// const T	*__tree_bidirectional_iter<T, NodeType>::operator->() const
-	// {
-	// 	return (&(node->content));
-	// }
 
 	template<class T, class NodeType>
 	__tree_bidirectional_iter<T,NodeType>& __tree_bidirectional_iter<T, NodeType>::operator=(const __tree_bidirectional_iter<T, NodeType>& x)
@@ -165,19 +147,18 @@ namespace ft
 
 	/* --------------------------------------------------------------------------
 
-		CONST ITERATOR FOR IDIRECTIONAL ORDERED TREE
+		CONST ITERATOR FOR DIRECTIONAL ORDERED TREE
 		
 	-------------------------------------------------------------------------- */
 
 
-	template<class T, class NodeType> //l'iterator peut aller avec nimporte quel arbre tant qu'il respect la bidirectionalité et l'ordre
-	class __tree_bidirectional_const_iter: public iterator<bidirectional_iterator_tag, T>
+	template<class T, class NodeType>
+	class __tree_bidirectional_const_iter: public iterator<bidirectional_iterator_tag, const T>
 	{
 	private:
 		typedef NodeType								Node;
-		//typedef Node*					NodePtr;
 	public:
-		__tree_bidirectional_const_iter(); //create nullptr
+		__tree_bidirectional_const_iter();
 		__tree_bidirectional_const_iter(Node *node);
 		__tree_bidirectional_const_iter(const __tree_bidirectional_const_iter& x);
 		__tree_bidirectional_const_iter(__tree_bidirectional_iter<T,NodeType> x);
@@ -197,9 +178,12 @@ namespace ft
 		friend bool operator== (const __tree_bidirectional_const_iter<_T,_NodeType>& lhs, const __tree_bidirectional_const_iter<_T,_NodeType>& rhs);
 		template<class _T, class _NodeType>
 		friend bool operator== (const __tree_bidirectional_const_iter<_T,_NodeType>& lhs, const __tree_bidirectional_iter<_T,_NodeType>& rhs);
+		template<class _T, class _NodeType>
+		friend bool operator== (const __tree_bidirectional_const_iter<_T, _NodeType>& lhs, const __tree_bidirectional_iter<_T, _NodeType>& rhs);
 	private:
-		template <class,class> friend class __tree_bidirectional_iter;
 		Node							*node;
+		template <class,class> friend class __tree_bidirectional_iter;
+		template <class, class, class> friend class __bst;
 	};
 
 	template<class T, class NodeType>
@@ -233,7 +217,7 @@ namespace ft
 			node = NodeType::smallest(node->right);
 		else
 		{
-			while (node->father && node->father->left != node) //node->father null n'arrive jamais // ah bon?
+			while (node->father && node->father->left != node)
 				node = node->father;
 			node = node->father;
 		}
@@ -255,7 +239,7 @@ namespace ft
 			node = NodeType::biggest(node->left);
 		else
 		{
-			while (node->father && node->father->right != node) //node->father null n'arrive jamais
+			while (node->father && node->father->right != node)
 				node = node->father;
 			node = node->father;
 		}
@@ -266,7 +250,7 @@ namespace ft
 	__tree_bidirectional_const_iter<T,NodeType> __tree_bidirectional_const_iter<T, NodeType>::operator--(int)
 	{
 		__tree_bidirectional_const_iter tmp(*this);
-		++(*this);
+		--(*this);
 		return (tmp);
 	}
 
@@ -327,7 +311,7 @@ namespace ft
 
 	/* --------------------------------------------------------------------------
 
-		BIDIRECTIONAL ORDERED TREE (+ NODE)
+		BIDIRECTIONAL NODE
 		
 	-------------------------------------------------------------------------- */
 
@@ -339,9 +323,6 @@ namespace ft
 		_node_bst();
 		_node_bst(const T& val);
 
-
-		// _node_bst_add_left();
-		// _node_bst_add_right();
 		T			content;
 		bool		is_red;
 		_NodePtr	father;
@@ -361,6 +342,7 @@ namespace ft
 			return (start);
 		}
 	private:
+		_node_bst(const _node_bst& x);
 		_node_bst& operator=(const _node_bst& x);
 	};
 
@@ -380,14 +362,22 @@ namespace ft
 	{ }
 
 	template<class T>
+	_node_bst<T>::_node_bst(const _node_bst& x)
+	{
+		(void)x;
+	}
+
+	template<class T>
 	_node_bst<T>& _node_bst<T>::operator=(const _node_bst<T>& x)
 	{
 		(void)x;
-		// content = x.content;
-		// father = x.father;
-		// left = x.left;
-		// right = x.right;
 	}
+
+	/* --------------------------------------------------------------------------
+
+		BIDIRECTIONAL ORDERED TREE
+		
+	-------------------------------------------------------------------------- */
 
 	template<class T, class ValComp, class Alloc = std::allocator<T> >
 	class __bst
@@ -413,75 +403,49 @@ namespace ft
 			__bst(const __bst& x);
 			__bst& operator=(const __bst& x);
 			~__bst();
-
-			
+	
 			_node_allocator_type	__node_alloc();
+			allocator_type			get_alloc() const {return (allocator_type());}
+			value_compare			value_comp() const;
 
-			iterator			begin();
-			const_iterator		begin() const;
-			iterator			end();
-			const_iterator		end() const;
-			size_type			size() const;
-			pair<iterator,bool>	insert(const value_type& val);
-			// template <class _Iter>
-			// void				insert(_Iter first, _Iter last);
-			iterator			find(const key_type& k);
-			const_iterator		find(const key_type& k) const;
-			size_type			count(const key_type& k) const;
-			allocator_type		get_alloc() const {return (allocator_type());}
-			size_type			max_size() const {return (_node_alloc.max_size());}
-			void				clear();
-			iterator 			lower_bound (const key_type& k);
-			const_iterator		lower_bound (const key_type& k) const;
-			iterator			upper_bound (const key_type& k);
-			const_iterator		upper_bound (const key_type& k) const;
-			value_compare		value_comp() const;
+			/* Iterators */
+			iterator				begin();
+			const_iterator			begin() const;
+			iterator				end();
+			const_iterator			end() const;
+
+			/* Capacity */
+			size_type				size() const;
+			size_type				max_size() const;
+
+			/* Modifiers */	
+			pair<iterator,bool>		insert(const value_type& val);
+			void					erase(iterator position);
+			void					clear();
+			void					swap(__bst& x);
+
+			/* Operations */
+			iterator				find(const key_type& k);
+			const_iterator			find(const key_type& k) const;
+			size_type				count(const key_type& k) const;
+			iterator 				lower_bound (const key_type& k);
+			const_iterator			lower_bound (const key_type& k) const;
+			iterator				upper_bound (const key_type& k);
+			const_iterator			upper_bound (const key_type& k) const;
 		
 		private:
-			_NodePtr			__begin_node() const { return (this->_begin); };
-			_NodePtr			__end_node() const { return (this->_root.right); };
-
-			void				__destroy_all_from_node(_NodePtr node);
-			_NodePtr			__first_after_key_included(const key_type& k) const;
-			_NodePtr			__first_after_key(const key_type& k) const;
-
-			// template <class _Iter>
-			// void				__insert_range(_Iter first, _Iter last);
-			// template <class _Iter>
-			// void				__insert_range(_Iter first, _Iter last, ft::input_iterator_tag);
-			// template <class _Iter>
-			// void				__insert_range(_Iter first, _Iter last, ft::forward_iterator_tag);
-			// template <class _Iter>
-			// void				__insert_range(_Iter first, _Iter last, std::input_iterator_tag);
-			// template <class _Iter>
-			// void				__insert_range(_Iter first, _Iter last, std::forward_iterator_tag);
-		public:	
-			void					swap(__bst& x);
-		private:
 			_NodePtr				_begin;
-			_EndNode				_root; //right is end, so it itself, left is the first node. If nothing, is itself so as begin == end. Father is always nullptr
-									//for the iterator, -- check if end(), meaning if father exist then proceed to do the same as usual
+			_EndNode				_root;
 			size_type				_size;
 			value_compare			_value_comp;
 			_node_allocator_type	_node_alloc;
 
+			_NodePtr				__begin_node() const { return (this->_begin); };
+			_NodePtr				__end_node() const { return (this->_root.right); };
+			void					__destroy_all_from_node(_NodePtr node);
+			_NodePtr				__first_after_key_included(const key_type& k) const;
+			_NodePtr				__first_after_key(const key_type& k) const;
 			_NodePtr&				__find_leaf(_NodePtr& father, const value_type& val);
-
-			//TODELET
-		public:
-			void					__print() const { __print_nodedtree(0,_root.left);}
-		private:
-			void					__print_nodedtree(int i, _NodePtr ptr) const
-			{
-				if (!ptr)
-					return ;
-				for (int j = 0; j < i; j++)
-					std::cout << "| ";
-				std::cout << "-";
-				std::cout << "(key,val): ("<<  ptr->content.first << "," << ptr->content.second << ")" << std::endl;
-				__print_nodedtree(i + 1, ptr->left);
-				__print_nodedtree(i + 1, ptr->right);
-			}
 	};
 
 	/* --------------------------------------------------------------------------
@@ -581,6 +545,13 @@ namespace ft
 		return (this->_size);
 	}
 
+	template<class T, class Compare, class Alloc>
+	typename __bst<T,Compare,Alloc>::size_type
+	__bst<T,Compare,Alloc>::max_size() const
+	{
+		return (_node_alloc.max_size());
+	}
+
 	/* --------------------------------------------------------------------------
 
 		MODIFIERS
@@ -633,7 +604,7 @@ namespace ft
 			__destroy_all_from_node(node->left);
 			__destroy_all_from_node(node->right);
 			_node_alloc.destroy(node);
-			_node_alloc.deallocate(node, 1);
+			_node_alloc.deallocate(node, 1); // __destroy_one_node(_NodePtr node)
 		}
 	}
 
@@ -644,6 +615,64 @@ namespace ft
 		_size = 0;
 		_root.left = NULL;
 		_begin = __end_node();
+	}
+
+	/* prerequis, position n'est pas end() */
+	template<class T, class Compare, class Alloc>
+	void	__bst<T,Compare,Alloc>::erase(iterator position)
+	{
+		iterator ptr(position++);
+		_NodePtr	next_ptr = position.node, del_ptr = ptr.node;
+
+		if (del_ptr == __begin_node())
+			this->_begin = next_ptr;
+		if (del_ptr->left == NULL)
+		{
+			if (del_ptr->father->left == del_ptr)
+				del_ptr->father->left = del_ptr->right;
+			else if (del_ptr->father->right == del_ptr)
+				del_ptr->father->right = del_ptr->right;
+			if (del_ptr->right) //cas où les deux sont NULL on ne fait rien
+				del_ptr->right->father = del_ptr->father;
+		}
+		else if (del_ptr->right == NULL)
+		{
+			if (del_ptr->father->left == del_ptr)
+				del_ptr->father->left = del_ptr->left;
+			else if (del_ptr->father->right == del_ptr)
+				del_ptr->father->right = del_ptr->left;
+			del_ptr->left->father = del_ptr->father;
+		}
+		else
+		{
+			//On va remonter le noeud du ptr suivant a la place de celui a supprimer
+
+			//On connecte le nouveau noeud avec la partie gauche de l'ancien
+			next_ptr->left = del_ptr->left;
+			next_ptr->left->father = next_ptr;
+			//Il prend aussi ce qui est a droit du noeud a condition qu'il ne soit pas le noeud lui meme
+			//dans le cas où c'est lui meme on a rien a faire
+			if (del_ptr->right != next_ptr)
+				next_ptr->right = del_ptr->right;
+			//On détache le nouveau noeud de son environnement, le father du nouveau noeud pointe pluls vers lui mais vers NULL
+			if (next_ptr->father->left == next_ptr)
+				next_ptr->father->left = NULL;
+			else if (next_ptr->father->right == next_ptr)
+				next_ptr->father->right = NULL;
+			//On redirige le noeud pere vers le noeud pere du noeud a supprimer
+			next_ptr->father = del_ptr->father;
+			//On redirige demande au pere du noeud de le rediriger vers lui
+			if (del_ptr->father->left == del_ptr)
+				del_ptr->father->left = next_ptr;
+			else if (del_ptr->father->right == del_ptr)
+				del_ptr->father->right = next_ptr;
+			//enfin on redirigie les noeuds fils de droite si il existe vers lui meme via le father
+			if (next_ptr->right)
+				next_ptr->right->father = next_ptr;
+		}
+		_node_alloc.destroy(del_ptr);
+		_node_alloc.deallocate(del_ptr, 1);
+		_size--;
 	}
 
 	/* --------------------------------------------------------------------------
@@ -823,19 +852,6 @@ namespace ft
 			}
 		}
 	}
-
-	/* --------------------------------------------------------------------------
-
-		NON MEMBER FUNCTIONS
-		
-	-------------------------------------------------------------------------- */
-
-	// not interesting because __bst should not exist outside the container use x.swap(y) directly;
-	// template<class T, class Compare, class Alloc>
-	// void swap (__bst<T,Compare,Alloc>& x, __bst<T,Compare,Alloc>& y)
-	// {
-	// 	x.swap(y);
-	// }
 }
 
 #endif
