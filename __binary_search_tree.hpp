@@ -3,10 +3,7 @@
 #include <memory> // std::allocator
 #include "utility.hpp" // ft::pair
 #include "algorithme.hpp" // ft::swap
-
-//To delete
-#include <iostream>
-#include <map>
+#include "iterator.hpp" // ft::iterator, ft::bidirectional_iterator_tag
 
 namespace ft
 {
@@ -19,12 +16,18 @@ namespace ft
 	template<class T, class NodeType> class	__tree_bidirectional_const_iter;
 
 	template<class T, class NodeType>
-	class __tree_bidirectional_iter: public iterator<bidirectional_iterator_tag, T>
+	class __tree_bidirectional_iter//: public ft::iterator<ft::bidirectional_iterator_tag, T>
 	{
 	private:
-		typedef NodeType				Node;
+		typedef NodeType					Node;
 		template<class,class> friend class __tree_bidirectional_const_iter;
 	public:
+		typedef	T							value_type;
+    	typedef ptrdiff_t  					difference_type;
+		typedef T*							pointer;
+		typedef T&							reference;
+		typedef bidirectional_iterator_tag	iterator_category;
+
 		__tree_bidirectional_iter();
 		__tree_bidirectional_iter(Node *node);
 		__tree_bidirectional_iter(const __tree_bidirectional_iter<T,NodeType>& x);
@@ -32,8 +35,8 @@ namespace ft
 		
 		__tree_bidirectional_iter& operator=(const __tree_bidirectional_iter& x);
 		
-		T&	operator*() const;
-		T	*operator->() const;
+		reference	operator*() const;
+		pointer		operator->() const;
 
 		__tree_bidirectional_iter& operator++();
 		__tree_bidirectional_iter operator++(int);
@@ -65,6 +68,11 @@ namespace ft
 	__tree_bidirectional_iter<T,NodeType>::__tree_bidirectional_iter(const __tree_bidirectional_iter<T,NodeType>& x)
 		:	node(x.node)
 	{ }
+
+	// template<class T, class NodeType>
+	// __tree_bidirectional_iter<T,NodeType>::__tree_bidirectional_iter(const __tree_bidirectional_const_iter<T,NodeType>& x)
+	// 	:	node(x.node)
+	// { }
 
 	template<class T, class NodeType>
 	__tree_bidirectional_iter<T,NodeType>::~__tree_bidirectional_iter()
@@ -115,13 +123,15 @@ namespace ft
 	}
 
 	template<class T, class NodeType>
-	T& __tree_bidirectional_iter<T, NodeType>::operator*() const
+	typename __tree_bidirectional_iter<T, NodeType>::reference
+	__tree_bidirectional_iter<T, NodeType>::operator*() const
 	{
 		return (node->content);
 	}
 
 	template<class T, class NodeType>
-	T	*__tree_bidirectional_iter<T, NodeType>::operator->() const
+	typename __tree_bidirectional_iter<T, NodeType>::pointer
+	__tree_bidirectional_iter<T, NodeType>::operator->() const
 	{
 		return (&(node->content));
 	}
@@ -153,11 +163,17 @@ namespace ft
 
 
 	template<class T, class NodeType>
-	class __tree_bidirectional_const_iter: public iterator<bidirectional_iterator_tag, const T>
+	class __tree_bidirectional_const_iter//: public iterator<bidirectional_iterator_tag, const T>
 	{
 	private:
 		typedef NodeType								Node;
 	public:
+		typedef	T							value_type;
+    	typedef ptrdiff_t  					difference_type;
+		typedef const T*					pointer;
+		typedef const T&					reference;
+		typedef bidirectional_iterator_tag	iterator_category;
+
 		__tree_bidirectional_const_iter();
 		__tree_bidirectional_const_iter(Node *node);
 		__tree_bidirectional_const_iter(const __tree_bidirectional_const_iter& x);
@@ -166,8 +182,8 @@ namespace ft
 		
 		__tree_bidirectional_const_iter& operator=(const __tree_bidirectional_const_iter& x);
 		
-		const T&	operator*() const;
-		const T		*operator->() const;
+		reference	operator*() const;
+		pointer		operator->() const;
 
 		__tree_bidirectional_const_iter& operator++();
 		__tree_bidirectional_const_iter operator++(int);
@@ -255,13 +271,15 @@ namespace ft
 	}
 
 	template<class T, class NodeType>
-	const T& __tree_bidirectional_const_iter<T, NodeType>::operator*() const
+	typename __tree_bidirectional_const_iter<T, NodeType>::reference
+	__tree_bidirectional_const_iter<T, NodeType>::operator*() const
 	{
 		return (node->content);
 	}
 
 	template<class T, class NodeType>
-	const T	*__tree_bidirectional_const_iter<T, NodeType>::operator->() const
+	typename __tree_bidirectional_const_iter<T, NodeType>::pointer
+	__tree_bidirectional_const_iter<T, NodeType>::operator->() const
 	{
 		return (&(node->content));
 	}
@@ -387,7 +405,7 @@ namespace ft
 			typedef ValComp								value_compare;
 			typedef Alloc								allocator_type;
 			typedef size_t								size_type;
-			typedef typename T::first_type				key_type; //ne va pas marcher avec SET faut etre plus Smart
+			//typedef typename T::first_type				key_type; //ne va pas marcher avec SET faut etre plus Smart
 		private:
 			typedef _node_bst<value_type>	Node;
 			typedef Node			_EndNode;
@@ -420,18 +438,26 @@ namespace ft
 
 			/* Modifiers */	
 			pair<iterator,bool>		insert(const value_type& val);
-			void					erase(iterator position);
+			// void					erase(iterator position);
+			void					erase(const_iterator position);
 			void					clear();
 			void					swap(__bst& x);
 
 			/* Operations */
-			iterator				find(const key_type& k);
-			const_iterator			find(const key_type& k) const;
-			size_type				count(const key_type& k) const;
-			iterator 				lower_bound (const key_type& k);
-			const_iterator			lower_bound (const key_type& k) const;
-			iterator				upper_bound (const key_type& k);
-			const_iterator			upper_bound (const key_type& k) const;
+			template <class _KeyType>
+			iterator				find(const _KeyType& k);
+			template <class _KeyType>
+			const_iterator			find(const _KeyType& k) const;
+			template <class _KeyType>
+			size_type				count(const _KeyType& k) const;
+			template <class _KeyType>
+			iterator 				lower_bound (const _KeyType& k);
+			template <class _KeyType>
+			const_iterator			lower_bound (const _KeyType& k) const;
+			template <class _KeyType>
+			iterator				upper_bound (const _KeyType& k);
+			template <class _KeyType>
+			const_iterator			upper_bound (const _KeyType& k) const;
 		
 		private:
 			_NodePtr				_begin;
@@ -443,8 +469,10 @@ namespace ft
 			_NodePtr				__begin_node() const { return (this->_begin); };
 			_NodePtr				__end_node() const { return (this->_root.right); };
 			void					__destroy_all_from_node(_NodePtr node);
-			_NodePtr				__first_after_key_included(const key_type& k) const;
-			_NodePtr				__first_after_key(const key_type& k) const;
+			template <class _KeyType>
+			_NodePtr				__first_after_key_included(const _KeyType& k) const;
+			template <class _KeyType>
+			_NodePtr				__first_after_key(const _KeyType& k) const;
 			_NodePtr&				__find_leaf(_NodePtr& father, const value_type& val);
 	};
 
@@ -496,7 +524,9 @@ namespace ft
 
 	template<class T, class Compare, class Alloc>
 	__bst<T,Compare,Alloc>::~__bst()
-	{ }
+	{ 
+		__destroy_all_from_node(_root.left);
+	}
 
 	/* --------------------------------------------------------------------------
 
@@ -619,9 +649,9 @@ namespace ft
 
 	/* prerequis, position n'est pas end() */
 	template<class T, class Compare, class Alloc>
-	void	__bst<T,Compare,Alloc>::erase(iterator position)
+	void	__bst<T,Compare,Alloc>::erase(const_iterator position)
 	{
-		iterator ptr(position++);
+		const_iterator ptr(position++);
 		_NodePtr	next_ptr = position.node, del_ptr = ptr.node;
 
 		if (del_ptr == __begin_node())
@@ -682,8 +712,9 @@ namespace ft
 	-------------------------------------------------------------------------- */
 
 	template<class T, class Compare, class Alloc>
+	template <class _KeyType>
 	typename __bst<T,Compare,Alloc>::iterator
-	__bst<T,Compare,Alloc>::find (const key_type& k)
+	__bst<T,Compare,Alloc>::find (const _KeyType& k)
 	{
 		_NodePtr node = _root.left;
 
@@ -700,8 +731,9 @@ namespace ft
 	}
 
 	template<class T, class Compare, class Alloc>
+	template <class _KeyType>
 	typename __bst<T,Compare,Alloc>::const_iterator
-	__bst<T,Compare,Alloc>::find (const key_type& k) const
+	__bst<T,Compare,Alloc>::find (const _KeyType& k) const
 	{
 		_NodePtr node = _root.left;
 
@@ -718,8 +750,9 @@ namespace ft
 	}
 
 	template<class T, class Compare, class Alloc>
+	template <class _KeyType>
 	typename __bst<T,Compare,Alloc>::size_type
-	__bst<T,Compare,Alloc>::count(const key_type& k) const
+	__bst<T,Compare,Alloc>::count(const _KeyType& k) const
 	{
 		_NodePtr node = _root.left;
 
@@ -736,36 +769,41 @@ namespace ft
 	}
 
 	template<class T, class Compare, class Alloc>
+	template <class _KeyType>
 	typename __bst<T,Compare,Alloc>::iterator
-	__bst<T,Compare,Alloc>::lower_bound (const key_type& k)
+	__bst<T,Compare,Alloc>::lower_bound (const _KeyType& k)
 	{
 		return (iterator(__first_after_key_included(k)));
 	}
 
 	template<class T, class Compare, class Alloc>
+	template <class _KeyType>
 	typename __bst<T,Compare,Alloc>::const_iterator
-	__bst<T,Compare,Alloc>::lower_bound (const key_type& k) const
+	__bst<T,Compare,Alloc>::lower_bound (const _KeyType& k) const
 	{
 		return (const_iterator(__first_after_key_included(k)));
 	}
 
 	template<class T, class Compare, class Alloc>
+	template <class _KeyType>
 	typename __bst<T,Compare,Alloc>::iterator
-	__bst<T,Compare,Alloc>::upper_bound (const key_type& k)
+	__bst<T,Compare,Alloc>::upper_bound (const _KeyType& k)
 	{
 		return (iterator(__first_after_key(k)));
 	}
 
 	template<class T, class Compare, class Alloc>
+	template <class _KeyType>
 	typename __bst<T,Compare,Alloc>::const_iterator
-	__bst<T,Compare,Alloc>::upper_bound (const key_type& k) const
+	__bst<T,Compare,Alloc>::upper_bound (const _KeyType& k) const
 	{
 		return (const_iterator(__first_after_key(k)));
 	}
 
 	template<class T, class Compare, class Alloc>
+	template <class _KeyType>
 	typename __bst<T,Compare,Alloc>::_NodePtr
-	__bst<T,Compare,Alloc>::__first_after_key_included(const key_type& k) const
+	__bst<T,Compare,Alloc>::__first_after_key_included(const _KeyType& k) const
 	{
 		_NodePtr node = _root.left;
 		_NodePtr found = __end_node();
@@ -784,8 +822,9 @@ namespace ft
 	}
 
 	template<class T, class Compare, class Alloc>
+	template <class _KeyType>
 	typename __bst<T,Compare,Alloc>::_NodePtr
-	__bst<T,Compare,Alloc>::__first_after_key(const key_type& k) const
+	__bst<T,Compare,Alloc>::__first_after_key(const _KeyType& k) const
 	{
 		_NodePtr node = _root.left;
 		_NodePtr found = __end_node();

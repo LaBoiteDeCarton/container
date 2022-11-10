@@ -363,7 +363,7 @@ namespace ft
 	void map<Key,T,Comp,Alloc>::erase (iterator position)
 	{
 		if (position != end())
-			this->_tree.erase(position);
+			this->_tree.erase(const_iterator(position));
 	}
 	
 	template < class Key, class T, class Comp, class Alloc>
