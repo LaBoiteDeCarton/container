@@ -9,7 +9,8 @@
 #include "utility.hpp"					//	ft::pair
 #include "algorithme.hpp"				//	ft::equal ft::swap
 #include "iterator.hpp"					//	ft::iterator, ft::iterator_traits, ft::bidirectional_iterator_tag, ft::reverse_iterator
-#include "__binary_search_tree.hpp"		//	ft::__bst
+// #include "__binary_search_tree.hpp"		//	ft::__bst
+#include "__red_black_tree.hpp"			//	ft::__rbt
 
 namespace ft
 {
@@ -47,7 +48,7 @@ namespace ft
 
 		private:
 			/* Defininf the tree we are using. If you want to change the tree, change here the type definition */
-			typedef __bst<value_type, value_compare, allocator_type>		KeyValBST;
+			typedef __rbt<value_type, value_compare, allocator_type>		KeyValBST;
 		public:
 			typedef typename KeyValBST::iterator							iterator;
 			typedef typename KeyValBST::const_iterator						const_iterator;

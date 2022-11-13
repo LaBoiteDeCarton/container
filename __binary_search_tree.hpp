@@ -69,11 +69,6 @@ namespace ft
 		:	node(x.node)
 	{ }
 
-	// template<class T, class NodeType>
-	// __tree_bidirectional_iter<T,NodeType>::__tree_bidirectional_iter(const __tree_bidirectional_const_iter<T,NodeType>& x)
-	// 	:	node(x.node)
-	// { }
-
 	template<class T, class NodeType>
 	__tree_bidirectional_iter<T,NodeType>::~__tree_bidirectional_iter()
 	{ }
@@ -342,7 +337,6 @@ namespace ft
 		_node_bst(const T& val);
 
 		T			content;
-		bool		is_red;
 		_NodePtr	father;
 		_NodePtr	left;
 		_NodePtr	right;
@@ -405,7 +399,6 @@ namespace ft
 			typedef ValComp								value_compare;
 			typedef Alloc								allocator_type;
 			typedef size_t								size_type;
-			//typedef typename T::first_type				key_type; //ne va pas marcher avec SET faut etre plus Smart
 		private:
 			typedef _node_bst<value_type>	Node;
 			typedef Node			_EndNode;
@@ -438,7 +431,6 @@ namespace ft
 
 			/* Modifiers */	
 			pair<iterator,bool>		insert(const value_type& val);
-			// void					erase(iterator position);
 			void					erase(const_iterator position);
 			void					clear();
 			void					swap(__bst& x);
@@ -855,7 +847,7 @@ namespace ft
 	typename __bst<T,Compare,Alloc>::_NodePtr&
 	__bst<T,Compare,Alloc>::__find_leaf(_NodePtr& father, const value_type& val)
 	{
-		_NodePtr	node = _root.left; //static cast?
+		_NodePtr	node = _root.left;
 
 		if (node == NULL)
 		{

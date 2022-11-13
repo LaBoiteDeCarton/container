@@ -6,12 +6,12 @@
 */
 #include <memory>						//	std::allocator
 #include <functional>					//	std::less
-#include "__binary_search_tree.hpp"		//	ft::__bst
+#include "__red_black_tree.hpp"			//	ft::__rbt
 #include "iterator.hpp"					//	ft::reverse_iterator
 
 //To delete
 // #include <set>
-#include <map>
+// #include "__binary_search_tree.hpp"
 
 namespace ft
 {
@@ -30,7 +30,7 @@ namespace ft
 		typedef typename allocator_type::const_pointer					const_pointer;
 	private:
 		/* Defininf the tree we are using. If you want to change the tree, change here the type definition */
-		typedef __bst<value_type, value_compare, allocator_type>		ValBST;
+		typedef __rbt<value_type, value_compare, allocator_type>		ValBST;
 	public:
 		typedef typename ValBST::const_iterator							iterator;
 		typedef typename ValBST::const_iterator							const_iterator;
