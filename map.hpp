@@ -9,7 +9,6 @@
 #include "utility.hpp"					//	ft::pair
 #include "algorithme.hpp"				//	ft::equal ft::swap
 #include "iterator.hpp"					//	ft::iterator, ft::iterator_traits, ft::bidirectional_iterator_tag, ft::reverse_iterator
-// #include "__binary_search_tree.hpp"		//	ft::__bst
 #include "__red_black_tree.hpp"			//	ft::__rbt
 
 namespace ft
@@ -317,7 +316,7 @@ namespace ft
 
 		if (it == end())
 			throw (std::out_of_range("map"));
-		return ((*it).second); //get mapped type ainsi value_type peut etre n'importe quoi -> la flemme
+		return ((*it).second);
 	}
 
 	template < class Key, class T, class Comp, class Alloc>

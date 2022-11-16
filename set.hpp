@@ -9,10 +9,6 @@
 #include "__red_black_tree.hpp"			//	ft::__rbt
 #include "iterator.hpp"					//	ft::reverse_iterator
 
-//To delete
-// #include <set>
-// #include "__binary_search_tree.hpp"
-
 namespace ft
 {
 	template <class T, class Compare = std::less<T>,  class Alloc = std::allocator<T> >

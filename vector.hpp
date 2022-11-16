@@ -8,29 +8,11 @@
 #include "type_traits.hpp" // ft::is_equal and ft::is_integral
 #include <iterator>
 
-#include <vector>
-//#include <iostream>
+//#include <vector>
+#include <iostream>
 
 namespace ft
 {
-	/* --------------------------------------------------------------------------
-
-		RANDOM ACCESS ITERATOR
-		
-	-------------------------------------------------------------------------- */
-
-	// template<class T>
-	// class __random_access_iterator : public iterator<random_access_iterator_tag>
-	// {
-	// private:
-	// 	typedef __random_access_iterator	__rai;
-	// public:
-	// 	/* Constructeurs */
-	// 	__rai();
-	// 	__rai(__rai src);
-	// 	__rai&	operator=(__rai)
-	// };
-
 	/* --------------------------------------------------------------------------
 
 		VECTOR CLASS
@@ -47,8 +29,6 @@ namespace ft
 		typedef typename allocator_type::const_reference				const_reference;
 		typedef typename allocator_type::pointer						pointer;
 		typedef typename allocator_type::const_pointer					const_pointer;
-		//typedef typename ft::random_access_iterator<T>				iterator;
-		//typedef typename ft::random_access_iterator<const T>			const_iterator;
 		typedef pointer													iterator;
 		typedef const_pointer											const_iterator;
 		typedef ft::reverse_iterator<iterator>							reverse_iterator;
@@ -278,11 +258,6 @@ namespace ft
 		_last(NULL),
 		_end_cap(NULL)
 	{
-		// size_type size = last - first; //NOPE
-
-		// this->_first = this->_alloc.allocate(size);
-		// this->_last = this->_first;
-		// this->_end_cap = this->_first + size; // tout est dans assign
 		this->assign(first, last);
 	}
 
@@ -603,15 +578,12 @@ namespace ft
 	void vector<T,Alloc>::push_back (const value_type& val)
 	{
 		this->__push_n_back(1, val);
-		// if (this->_last == this->_end_cap)
-		// 	this->reserve(capacity() * 2 + 1);
-		// this->_alloc.construct(this->_last++, val);
 	}
 	
 	template<class T, class Alloc>
 	void vector<T,Alloc>::pop_back()
 	{
-		if (this->_last != this->_first) // if (! empty())
+		if (this->_last != this->_first)
 			this->_alloc.destroy(--(this->_last));
 	}
 
@@ -619,9 +591,6 @@ namespace ft
 	typename vector<T,Alloc>::iterator
 	vector<T,Alloc>::insert (iterator position, const value_type& val)
 	{
-		// reserve(size() + 1);
-		// this->_last = __memmove(position, this->_last, position + 1);
-		// _alloc.construct(position, val);
 		vector<T,Alloc>::difference_type diff(position - this->_first);
 		insert(position, 1, val);
 		position = this->_first + diff;

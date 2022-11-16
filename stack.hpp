@@ -2,7 +2,6 @@
 # define FT_STACK_HPP
 
 #include "vector.hpp"
-#include <stack>
 
 namespace ft
 {
@@ -16,7 +15,6 @@ namespace ft
 
 			/* Constructors */
 			explicit stack (const container_type& ctnr = container_type());
-			//~stack()  no need, implicite desruction of C;
 
 			/* Member functions */
 			bool empty() const;

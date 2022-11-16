@@ -345,23 +345,6 @@ namespace ft
 	{
 		return (__distance(first, last, typename iterator_traits<Iterator>::iterator_category()));
 	}
-
-	// template <class __it_category> struct __is_input_iterator_tag : public false_type {};
-	// template<> struct __is_input_iterator_tag<input_iterator_tag> : public true_type {};
-
-
-	// template <class __it_category> struct __is_forward_iterator_tag : public false_type {};
-	// template<> struct __is_forward_iterator_tag<forward_iterator_tag> : public true_type {};
-	// template<> struct __is_forward_iterator_tag<bidirectional_iterator_tag> : public true_type {};
-	// template<> struct __is_forward_iterator_tag<random_access_iterator_tag> : public true_type {};
-
-	// template <class Iterator>
-	// struct __is_input_iterator : public false_type {};
-	
-	// template <class Iterator
-	// 		, enable_if<__is_input_iterator_tag<typename iterator_traits<Iterator>::iterator_category>::type>
-	// 					,Iterator>
-	// struct __is_input_iterator : public true_type {};
 }
 
 #endif

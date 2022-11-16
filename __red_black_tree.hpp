@@ -1,330 +1,17 @@
 #ifndef __RED_BLACK_TREE_HPP
 # define __RED_BLACK_TREE_HPP
-#include <memory> // std::allocator
-#include "utility.hpp" // ft::pair
-#include "algorithme.hpp" // ft::swap
-#include "iterator.hpp" // ft::iterator, ft::bidirectional_iterator_tag
 
-// #include <set>
+/*
+			#Includes							//	used class or functions from inlcudes
+*/
+#include <memory>								// std::allocator
+#include "utility.hpp"							// ft::pair
+#include "algorithme.hpp"						// ft::swap
+#include "__tree_bidirectional_iterator.hpp"	// ft::__tree_bidirectional_iter, ft::__tree_bidirectional_const_iter
+
 #include <iostream>
-
 namespace ft
 {
-	/* --------------------------------------------------------------------------
-
-		ITERATOR FOR DIRECTIONAL ORDERED TREE
-		
-	-------------------------------------------------------------------------- */
-
-	template<class T, class NodeType> class	__tree_bidirectional_const_iter;
-
-	template<class T, class NodeType>
-	class __tree_bidirectional_iter//: public ft::iterator<ft::bidirectional_iterator_tag, T>
-	{
-	private:
-		typedef NodeType					Node;
-		template<class,class> friend class __tree_bidirectional_const_iter;
-	public:
-		typedef	T							value_type;
-    	typedef ptrdiff_t  					difference_type;
-		typedef T*							pointer;
-		typedef T&							reference;
-		typedef bidirectional_iterator_tag	iterator_category;
-
-		__tree_bidirectional_iter();
-		__tree_bidirectional_iter(Node *node);
-		__tree_bidirectional_iter(const __tree_bidirectional_iter<T,NodeType>& x);
-		~__tree_bidirectional_iter();
-		
-		__tree_bidirectional_iter& operator=(const __tree_bidirectional_iter& x);
-		
-		reference	operator*() const;
-		pointer		operator->() const;
-
-		__tree_bidirectional_iter& operator++();
-		__tree_bidirectional_iter operator++(int);
-		__tree_bidirectional_iter& operator--();
-		__tree_bidirectional_iter operator--(int);
-
-		template<class _T, class _NodeType>
-		friend bool operator== (const __tree_bidirectional_iter<_T,_NodeType>& lhs, const __tree_bidirectional_iter<_T,_NodeType>& rhs);
-		template<class _T, class _NodeType>
-		friend bool operator== (const __tree_bidirectional_iter<_T,_NodeType>& lhs, const __tree_bidirectional_const_iter<_T,_NodeType>& rhs);
-		template<class _T, class _NodeType>
-		friend bool operator== (const __tree_bidirectional_const_iter<_T, _NodeType>& lhs, const __tree_bidirectional_iter<_T, _NodeType>& rhs);
-	private:
-		Node							*node;
-		template <class, class, class> friend class __rbt;
-	};
-
-	template<class T, class NodeType>
-	__tree_bidirectional_iter<T,NodeType>::__tree_bidirectional_iter()
-		:	node()
-	{ }
-
-	template<class T, class NodeType>
-	__tree_bidirectional_iter<T,NodeType>::__tree_bidirectional_iter(Node *x)
-		:	node(x)
-	{ }
-	
-	template<class T, class NodeType>
-	__tree_bidirectional_iter<T,NodeType>::__tree_bidirectional_iter(const __tree_bidirectional_iter<T,NodeType>& x)
-		:	node(x.node)
-	{ }
-
-	template<class T, class NodeType>
-	__tree_bidirectional_iter<T,NodeType>::~__tree_bidirectional_iter()
-	{ }
-
-	template<class T, class NodeType>
-	__tree_bidirectional_iter<T,NodeType>& __tree_bidirectional_iter<T, NodeType>::operator++()
-	{
-		if (this->node->right)
-			node = NodeType::smallest(node->right);
-		else
-		{
-			while (node->father && node->father->left != node)
-				node = node->father;
-			node = node->father;
-		}
-		return (*this);
-	}
-
-	template<class T, class NodeType>
-	__tree_bidirectional_iter<T,NodeType> __tree_bidirectional_iter<T, NodeType>::operator++(int)
-	{
-		__tree_bidirectional_iter tmp(*this);
-		++(*this);
-		return (tmp);
-	}
-
-	template<class T, class NodeType>
-	__tree_bidirectional_iter<T,NodeType>& __tree_bidirectional_iter<T, NodeType>::operator--()
-	{
-		if (this->node->left)
-			node = NodeType::biggest(node->left);
-		else
-		{
-			while (node->father && node->father->right != node)
-				node = node->father;
-			node = node->father;
-		}
-		return (*this);
-	}
-
-	template<class T, class NodeType>
-	__tree_bidirectional_iter<T,NodeType> __tree_bidirectional_iter<T, NodeType>::operator--(int)
-	{
-		__tree_bidirectional_iter tmp(*this);
-		--(*this);
-		return (tmp);
-	}
-
-	template<class T, class NodeType>
-	typename __tree_bidirectional_iter<T, NodeType>::reference
-	__tree_bidirectional_iter<T, NodeType>::operator*() const
-	{
-		return (node->content);
-	}
-
-	template<class T, class NodeType>
-	typename __tree_bidirectional_iter<T, NodeType>::pointer
-	__tree_bidirectional_iter<T, NodeType>::operator->() const
-	{
-		return (&(node->content));
-	}
-
-	template<class T, class NodeType>
-	__tree_bidirectional_iter<T,NodeType>& __tree_bidirectional_iter<T, NodeType>::operator=(const __tree_bidirectional_iter<T, NodeType>& x)
-	{
-		this->node = x.node;
-		return (*this);
-	}
-
-	template<class T, class NodeType>
-	bool operator== (const __tree_bidirectional_iter<T, NodeType>& lhs, const __tree_bidirectional_iter<T, NodeType>& rhs)
-	{
-		return (lhs.node == rhs.node);
-	}
-
-	template<class T, class NodeType>
-	bool operator!= (const __tree_bidirectional_iter<T, NodeType>& lhs, const __tree_bidirectional_iter<T, NodeType>& rhs)
-	{
-		return (!(lhs == rhs));
-	}
-
-	/* --------------------------------------------------------------------------
-
-		CONST ITERATOR FOR DIRECTIONAL ORDERED TREE
-		
-	-------------------------------------------------------------------------- */
-
-
-	template<class T, class NodeType>
-	class __tree_bidirectional_const_iter//: public iterator<bidirectional_iterator_tag, const T>
-	{
-	private:
-		typedef NodeType								Node;
-	public:
-		typedef	T							value_type;
-    	typedef ptrdiff_t  					difference_type;
-		typedef const T*					pointer;
-		typedef const T&					reference;
-		typedef bidirectional_iterator_tag	iterator_category;
-
-		__tree_bidirectional_const_iter();
-		__tree_bidirectional_const_iter(Node *node);
-		__tree_bidirectional_const_iter(const __tree_bidirectional_const_iter& x);
-		__tree_bidirectional_const_iter(__tree_bidirectional_iter<T,NodeType> x);
-		~__tree_bidirectional_const_iter();
-		
-		__tree_bidirectional_const_iter& operator=(const __tree_bidirectional_const_iter& x);
-		
-		reference	operator*() const;
-		pointer		operator->() const;
-
-		__tree_bidirectional_const_iter& operator++();
-		__tree_bidirectional_const_iter operator++(int);
-		__tree_bidirectional_const_iter& operator--();
-		__tree_bidirectional_const_iter operator--(int);
-
-		template<class _T, class _NodeType>
-		friend bool operator== (const __tree_bidirectional_const_iter<_T,_NodeType>& lhs, const __tree_bidirectional_const_iter<_T,_NodeType>& rhs);
-		template<class _T, class _NodeType>
-		friend bool operator== (const __tree_bidirectional_const_iter<_T,_NodeType>& lhs, const __tree_bidirectional_iter<_T,_NodeType>& rhs);
-		template<class _T, class _NodeType>
-		friend bool operator== (const __tree_bidirectional_const_iter<_T, _NodeType>& lhs, const __tree_bidirectional_iter<_T, _NodeType>& rhs);
-	private:
-		Node							*node;
-		template <class,class> friend class __tree_bidirectional_iter;
-		template <class, class, class> friend class __rbt;
-	};
-
-	template<class T, class NodeType>
-	__tree_bidirectional_const_iter<T,NodeType>::__tree_bidirectional_const_iter()
-		:	node()
-	{ }
-
-	template<class T, class NodeType>
-	__tree_bidirectional_const_iter<T,NodeType>::__tree_bidirectional_const_iter(Node *x)
-		:	node(x)
-	{ }
-	
-	template<class T, class NodeType>
-	__tree_bidirectional_const_iter<T,NodeType>::__tree_bidirectional_const_iter(const __tree_bidirectional_const_iter<T,NodeType>& x)
-		:	node(x.node)
-	{ }
-
-	template<class T, class NodeType>
-	__tree_bidirectional_const_iter<T,NodeType>::__tree_bidirectional_const_iter(__tree_bidirectional_iter<T,NodeType> x)
-		:	node(x.node)
-	{ }
-
-	template<class T, class NodeType>
-	__tree_bidirectional_const_iter<T,NodeType>::~__tree_bidirectional_const_iter()
-	{ }
-
-	template<class T, class NodeType>
-	__tree_bidirectional_const_iter<T,NodeType>& __tree_bidirectional_const_iter<T, NodeType>::operator++()
-	{
-		if (this->node->right)
-			node = NodeType::smallest(node->right);
-		else
-		{
-			while (node->father && node->father->left != node)
-				node = node->father;
-			node = node->father;
-		}
-		return (*this);
-	}
-
-	template<class T, class NodeType>
-	__tree_bidirectional_const_iter<T,NodeType> __tree_bidirectional_const_iter<T, NodeType>::operator++(int)
-	{
-		__tree_bidirectional_const_iter tmp(*this);
-		++(*this);
-		return (tmp);
-	}
-
-	template<class T, class NodeType>
-	__tree_bidirectional_const_iter<T,NodeType>& __tree_bidirectional_const_iter<T, NodeType>::operator--()
-	{
-		if (this->node->left)
-			node = NodeType::biggest(node->left);
-		else
-		{
-			while (node->father && node->father->right != node)
-				node = node->father;
-			node = node->father;
-		}
-		return (*this);
-	}
-
-	template<class T, class NodeType>
-	__tree_bidirectional_const_iter<T,NodeType> __tree_bidirectional_const_iter<T, NodeType>::operator--(int)
-	{
-		__tree_bidirectional_const_iter tmp(*this);
-		--(*this);
-		return (tmp);
-	}
-
-	template<class T, class NodeType>
-	typename __tree_bidirectional_const_iter<T, NodeType>::reference
-	__tree_bidirectional_const_iter<T, NodeType>::operator*() const
-	{
-		return (node->content);
-	}
-
-	template<class T, class NodeType>
-	typename __tree_bidirectional_const_iter<T, NodeType>::pointer
-	__tree_bidirectional_const_iter<T, NodeType>::operator->() const
-	{
-		return (&(node->content));
-	}
-
-	template<class T, class NodeType>
-	__tree_bidirectional_const_iter<T,NodeType>& __tree_bidirectional_const_iter<T, NodeType>::operator=(const __tree_bidirectional_const_iter<T, NodeType>& x)
-	{
-		this->node = x.node;
-		return (*this);
-	}
-
-	template<class T, class NodeType>
-	bool operator== (const __tree_bidirectional_const_iter<T, NodeType>& lhs, const __tree_bidirectional_const_iter<T, NodeType>& rhs)
-	{
-		return (lhs.node == rhs.node);
-	}
-
-	template<class T, class NodeType>
-	bool operator== (const __tree_bidirectional_const_iter<T, NodeType>& lhs, const __tree_bidirectional_iter<T, NodeType>& rhs)
-	{
-		return (lhs.node == rhs.node);
-	}
-
-	template<class T, class NodeType>
-	bool operator== (const __tree_bidirectional_iter<T, NodeType>& lhs, const __tree_bidirectional_const_iter<T, NodeType>& rhs)
-	{
-		return (lhs.node == rhs.node);
-	}
-
-	template<class T, class NodeType>
-	bool operator!= (const __tree_bidirectional_const_iter<T, NodeType>& lhs, const __tree_bidirectional_const_iter<T, NodeType>& rhs)
-	{
-		return (!(lhs == rhs));
-	}	
-
-	template<class T, class NodeType>
-	bool operator!= (const __tree_bidirectional_const_iter<T, NodeType>& lhs, const __tree_bidirectional_iter<T, NodeType>& rhs)
-	{
-		return (!(lhs == rhs));
-	}
-
-	template<class T, class NodeType>
-	bool operator!= (const __tree_bidirectional_iter<T, NodeType>& lhs, const __tree_bidirectional_const_iter<T, NodeType>& rhs)
-	{
-		return (!(lhs == rhs));
-	}	
-
 	/* --------------------------------------------------------------------------
 
 		BIDIRECTIONAL NODE
@@ -494,30 +181,30 @@ namespace ft
 			void					__rebalance_after_insert(_NodePtr node);
 			void					__rotate_tree_left(_NodePtr node);
 			void					__rotate_tree_right(_NodePtr node);
-			_NodePtr&				__transplant(_NodePtr x, _NodePtr y);
+			// _NodePtr&				__transplant(_NodePtr x, _NodePtr y);
 			// void					__make_node_disappear(_NodePtr node);
 			void					__rebalance_after_left_erase(_NodePtr father);
 			void					__rebalance_after_right_erase(_NodePtr father);
 
 			/* print rbt to delete */
-			void	__print_rbt_i(int i, _NodePtr node)
-			{
-				if (node)
-				{
-					for (int j = 0; j < i; j++)
-						std::cout << "|";
-					std::cout << "*";
-					if (node->is_red == true)
-						std::cout << "R";
-					else
-						std::cout << "B";
-					std::cout << node->content;
-					std::cout << std::endl;
-					__print_rbt_i(i + 1, node->left);
-					__print_rbt_i(i + 1, node->right);
-				}
-			}
-			void	__print_rbt() {__print_rbt_i(0, _root.left);};
+			// void	__print_rbt_i(int i, _NodePtr node)
+			// {
+			// 	if (node)
+			// 	{
+			// 		for (int j = 0; j < i; j++)
+			// 			std::cout << "|";
+			// 		std::cout << "*";
+			// 		if (node->is_red == true)
+			// 			std::cout << "R";
+			// 		else
+			// 			std::cout << "B";
+			// 		std::cout << node->content;
+			// 		std::cout << std::endl;
+			// 		__print_rbt_i(i + 1, node->left);
+			// 		__print_rbt_i(i + 1, node->right);
+			// 	}
+			// }
+			// void	__print_rbt() {__print_rbt_i(0, _root.left);};
 	};
 
 	/* --------------------------------------------------------------------------
@@ -773,63 +460,22 @@ namespace ft
 		_begin = __end_node();
 	}
 
-	/* Retour : reference sur le pointeur y depuis le nouveau père
-		Utilse car besoin de fixe l'arbre a partir du nouveau noeud qui est NULL dans certains cas
-	 */
-	template<class T, class Compare, class Alloc>
-	typename __rbt<T,Compare,Alloc>::_NodePtr&
-	__rbt<T,Compare,Alloc>::__transplant(_NodePtr x, _NodePtr y)
-	{
-		if (y)
-			y->father = x->father;
-		if (x->father->left == x)
-		{
-			x->father->left = y;
-			return (x->father->left);
-		}
-		x->father->right = y;
-		return (x->father->right);
-	}
-
 	// template<class T, class Compare, class Alloc>
-	// void	__rbt<T,Compare,Alloc>::__make_node_disappear(_NodePtr node)
+	// typename __rbt<T,Compare,Alloc>::_NodePtr&
+	// __rbt<T,Compare,Alloc>::__transplant(_NodePtr x, _NodePtr y)
 	// {
-	// 	const_iterator it(node);
-	// 	_NodePtr	next_node;
-	// 	_NodePtr	nn_f;
-	// 	bool		need_to_fixe = !node->is_red;
-
-	// 	if (node->left == NULL)
+	// 	if (y)
+	// 		y->father = x->father;
+	// 	if (x->father->left == x)
 	// 	{
-	// 		__transplant(node, node->right);
-	// 		if (need_to_fixe)
-	// 			__rebalance_after_erase(node->right, node->father);
-	// 		return ;
+	// 		x->father->left = y;
+	// 		return (x->father->left);
 	// 	}
-	// 	else if (node->right == NULL)
-	// 	{
-	// 		__transplant(node, node->left);
-	// 		if (need_to_fixe)
-	// 			__rebalance_after_erase(node->left, node->father);
-	// 		return ;
-	// 	}
-	// 	next_node = (++it).node;
-	// 	need_to_fix_up = !Node::__is_red(next_node);
-	// 	nn_f = next_node->father;
-	// 	_NodePtr& ref_next_right = __transplant(next_node, next_node->right);
-	// 	next_node->right = node->right;
-	// 	if (node->right) //peut etre NULL
-	// 		node->right->father = next_node;
-	// 	__transplant(node, next_node);
-	// 	next_node->left = node->left;
-	// 	if (node->left)
-	// 		node->left->father = next_node;
-	// 	next_node->is_red = node->is_red; //on concerve la couleur du noeud
-	// 	return (ref_next_right);
+	// 	x->father->right = y;
+	// 	return (x->father->right);
 	// }
 
-
-	/* left node of father is black (may be NULL) */
+	/* left node of father is black (may be NULL), balance correction needed on the left*/
 	template<class T, class Compare, class Alloc>
 	void	__rbt<T,Compare,Alloc>::__rebalance_after_left_erase(_NodePtr father)
 	{
@@ -872,7 +518,7 @@ namespace ft
 		}
 	}
 
-	/* right node of father is black (may be NULL) */
+	/* right node of father is black (may be NULL), balance correction needed on the right */
 	template<class T, class Compare, class Alloc>
 	void	__rbt<T,Compare,Alloc>::__rebalance_after_right_erase(_NodePtr father)
 	{
@@ -984,8 +630,6 @@ namespace ft
 			else if (to_fix)
 				__rebalance_after_left_erase(father_save);
 		}
-		// std::cout << "AFTER DESTROY " << del_ptr->content << std::endl;
-		// __print_rbt();
 		_node_alloc.destroy(del_ptr);
 		_node_alloc.deallocate(del_ptr, 1);
 		_size--;
